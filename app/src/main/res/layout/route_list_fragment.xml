@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="routeNotice"
+            type="com.sedi.routelist.models.Notice" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Дата"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@{routeNotice.date}"
+            tools:ignore="HardcodedText" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Введите ФИО"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@{routeNotice.fio}"
+            tools:ignore="HardcodedText" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Номер телефона"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@{routeNotice.phoneNumber}"
+            tools:ignore="HardcodedText" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Причиа выхода"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@{routeNotice.reason}"
+            tools:ignore="HardcodedText" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Время выхода"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@{routeNotice.exitTime}"
+            tools:ignore="HardcodedText" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Время возврата"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@{routeNotice.resetingTime}"
+            tools:ignore="HardcodedText" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Адрес места жительства"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@{routeNotice.residenceAdress}"
+            tools:ignore="HardcodedText" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Адрес пункта назначения"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@{routeNotice.destinationAdress}"
+            tools:ignore="HardcodedText" />
+
+
+        <Button
+            android:id="@+id/btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_blue_dark"
+            android:text="Сохранить"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+
+</layout>
