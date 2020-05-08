@@ -29,8 +29,8 @@ class MainActivity : AppCompatActivity(), ISaveListener, IResultCalback {
         pagerAdapter = NoticeAdapter(
             this,
             notices = listOf(
-                Notice("Моргачёв Виктор Сергеевич"),
-                Notice("Ишудченко Анастасия Витальевна")
+                Notice(""),
+                Notice("")
             ),
             saveListener = this
         )
