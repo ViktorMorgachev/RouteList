@@ -1,61 +1,43 @@
 package com.sedi.routelist.ui
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager.widget.PagerAdapter
+import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.sedi.routelist.R
-import com.sedi.routelist.models.Notice
-import com.sedi.routelist.models.NoticeRoomModel
-import com.sedi.routelist.models.asynkSaveNotice
-import com.sedi.routelist.models.convertNoticeItemToRoomModel
-import com.sedi.routelist.presenters.IResultCalback
-import com.sedi.routelist.presenters.ISaveListener
-import com.sedi.routelist.showToast
+import com.sedi.routelist.ui.fragment.NoticeFragment
 
-class MainActivity : AppCompatActivity(), ISaveListener, IResultCalback {
+class MainActivity : AppCompatActivity(), LifecycleObserver {
 
     private lateinit var viewPager: ViewPager
-    private lateinit var pagerAdapter: PagerAdapter
     private lateinit var tabLayout: TabLayout
+    private lateinit var viewPagerAdapter: NoticesPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         viewPager = findViewById(R.id.notice_view_pager)
-        pagerAdapter = NoticeAdapter(
-            this,
-            notices = listOf(
-                Notice("Моргачёв Виктор Сергеевич"),
-                Notice("Ишудченко Анастасия Витальевна")
-            ),
-            saveListener = this
-        )
-        viewPager.adapter = pagerAdapter
+        setupViewPager(viewPager)
 
         tabLayout = findViewById(R.id.tab_layout)
         tabLayout.setupWithViewPager(viewPager, true)
 
-        showToast(this, "PagerAdapter size: ${pagerAdapter.count}")
 
     }
 
-    override fun onSave(notice: Notice) {
-        asynkSaveNotice(convertNoticeItemToRoomModel(notice), this)
+    private fun setupViewPager(viewPager: ViewPager) {
+        viewPagerAdapter = NoticesPagerAdapter(
+            supportFragmentManager,
+            FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+        ).apply {
+            addFragment(NoticeFragment())
+            addFragment(NoticeFragment())
+            addFragment(NoticeFragment())
+        }
+        viewPager.adapter = viewPagerAdapter
     }
 
-    override fun onError(exception: Exception) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onSingleComplete(data: NoticeRoomModel?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onSucces() {
-        Toast.makeText(this, "Успешно сохраненно", Toast.LENGTH_SHORT).show()
-    }
 }
