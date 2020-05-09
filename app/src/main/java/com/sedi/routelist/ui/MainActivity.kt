@@ -7,9 +7,11 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.sedi.routelist.R
+import com.sedi.routelist.models.Notice
+import com.sedi.routelist.presenters.ISaveListener
 import com.sedi.routelist.ui.fragment.NoticeFragment
 
-class MainActivity : AppCompatActivity(), LifecycleObserver {
+class MainActivity : AppCompatActivity(), LifecycleObserver, ISaveListener {
 
     private lateinit var viewPager: ViewPager
     private lateinit var tabLayout: TabLayout
@@ -33,11 +35,14 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
             supportFragmentManager,
             FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
         ).apply {
-            addFragment(NoticeFragment())
-            addFragment(NoticeFragment())
-            addFragment(NoticeFragment())
+            addFragment(NoticeFragment.newInstance(Notice(fio = "Настя"), this@MainActivity))
+            addFragment(NoticeFragment.newInstance(Notice(fio = "Виктор"), this@MainActivity))
         }
         viewPager.adapter = viewPagerAdapter
+    }
+
+    override fun onSave(notice: Notice) {
+        // Nothing
     }
 
 }
