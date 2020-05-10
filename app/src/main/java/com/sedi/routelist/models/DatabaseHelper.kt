@@ -61,13 +61,13 @@ fun asynkGetAllNotices(
 
 }
 
-fun asynkDeleteNotice(resultCallback: IResultCalback, db: NoticeItemDatabase) {
+fun asynkDeleteNotice(resultCallback: IResultCalback, db: NoticeItemDatabase, noticeRoomModel: NoticeRoomModel) {
     asynkExecute {
         Thread.currentThread().name = "Database Thread"
 
         try {
-            val notices = db.noticeDAO().getAllNotices()
-            resultCallback.onSucces(notices = notices)
+            val notices = db.noticeDAO().delete(noticeRoomModel)
+            resultCallback.onSucces("Успешно удалено")
         } catch (e: Exception) {
             resultCallback.onError(e)
         }

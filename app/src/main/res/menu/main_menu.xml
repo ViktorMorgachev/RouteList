@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.MainActivity">
+    <item
+        android:id="@+id/menu_add_list"
+        android:icon="@drawable/ic_note_add_24dp"
+        android:title="Добавить"
+        android:onClick="addNotice"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/menu_remove_list"
+        android:icon="@drawable/ic_delete_24dp"
+        android:title="Удалить"
+        android:onClick="deleteNotice"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/menu_copy_list"
+        android:icon="@drawable/ic_copy_24dp"
+        android:title="Копировать"
+        android:onClick="copyNotice"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/menu_paste"
+        android:icon="@drawable/ic_paste_24dp"
+        android:title="Вставить"
+        android:onClick="pasteNotice"
+        tools:ignore="HardcodedText" />
+</menu>

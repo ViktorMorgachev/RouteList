@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.sedi.routelist.R
 import com.sedi.routelist.databinding.RouteListFragmentBinding
 import com.sedi.routelist.models.ExtraNames
 import com.sedi.routelist.models.Notice
 import com.sedi.routelist.presenters.IClickListener
+import com.sedi.routelist.ui.NoticesPagerAdapter
 import kotlinx.android.synthetic.main.route_list_fragment.*
 
 
@@ -21,6 +23,7 @@ class NoticeFragment : Fragment() {
     private var notice: Notice? = null
 
     // Logic
+    private lateinit var pagerAdapter: NoticesPagerAdapter
     private var position: Int? = null
 
     override fun onCreateView(
@@ -30,14 +33,14 @@ class NoticeFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(
             inflater,
-            com.sedi.routelist.R.layout.route_list_fragment, container, false
+            R.layout.route_list_fragment, container, false
         )
 
-        if (notice != null) {
-            binding.routeNotice = notice
-        } else {
-            binding.routeNotice = Notice()
+        if (notice == null) {
+            notice = Notice()
         }
+
+        binding.routeNotice = notice
 
         binding.executePendingBindings()
         binding.btnSave.setOnClickListener {
@@ -48,8 +51,13 @@ class NoticeFragment : Fragment() {
 
         }
 
-
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        pagerAdapter.currentNotice = notice!!
+        pagerAdapter.currentPosition = position!!
     }
 
     private fun initNotice() {
@@ -73,13 +81,23 @@ class NoticeFragment : Fragment() {
         return arguments?.getParcelable<Notice>(ExtraNames.KeysField.KEY_EXTRA_NOTICE)
     }
 
-    fun configurateFragment(clickListener: IClickListener, position: Int) {
+    fun configurateFragment(
+        clickListener: IClickListener,
+        noticesPagerAdapter: NoticesPagerAdapter,
+        position: Int
+    ) {
         this.position = position
+        this.pagerAdapter = noticesPagerAdapter
         this.clickListener = clickListener
     }
 
     companion object {
-        fun instance(notice: Notice, saveClickListener: IClickListener, position: Int) =
+        fun instance(
+            notice: Notice,
+            saveClickListener: IClickListener,
+            noticesPagerAdapter: NoticesPagerAdapter,
+            position: Int
+        ) =
             NoticeFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(
@@ -87,7 +105,7 @@ class NoticeFragment : Fragment() {
                         notice
                     )
                 }
-                configurateFragment(saveClickListener, position)
+                configurateFragment(saveClickListener, noticesPagerAdapter, position)
             }
     }
 
