@@ -10,7 +10,7 @@ interface NoticeDao {
     @Query("SELECT * FROM NoticeRoomModel WHERE primaryKey = :key")
     fun getNoticeByKey(key: Int): Notice
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(noticeItem: NoticeRoomModel)
 
     @Delete
@@ -18,5 +18,8 @@ interface NoticeDao {
 
     @Update
     fun update(noticeItem: NoticeRoomModel)
+
+    @Query("SELECT * FROM NoticeRoomModel")
+    fun getAllNotices(): List<Notice>
 
 }

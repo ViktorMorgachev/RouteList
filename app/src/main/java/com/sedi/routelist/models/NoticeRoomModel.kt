@@ -6,8 +6,9 @@ import androidx.room.PrimaryKey
 
 @Entity
 class NoticeRoomModel {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
     var primaryKey: Int = 0
+
     @ColumnInfo(name = "fio")
     var fio: String = ""
     var date: String = ""

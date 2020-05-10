@@ -6,13 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.sedi.routelist.models.dao.NoticeDao
 
-@Database(entities = arrayOf(NoticeRoomModel::class), exportSchema = false, version = 1)
+@Database(entities = [NoticeRoomModel::class], exportSchema = false, version = 1)
 abstract class NoticeItemDatabase : RoomDatabase() {
 
     abstract fun noticeDAO(): NoticeDao
 
     companion object {
-        private val DB_NAME = "notice_item_db"
+        private const val DB_NAME = "notice_item_db"
         @Volatile
         private var instance: NoticeItemDatabase? = null
         private val LOCK = Any()

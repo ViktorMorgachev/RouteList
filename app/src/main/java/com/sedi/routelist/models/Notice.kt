@@ -5,12 +5,12 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Notice(
-    val fio: String = "",
-    val date: String = "",
-    val phoneNumber: String = "",
-    val reason: String = "",
-    val exitTime: String = "",
-    val resetingTime: String = "",
-    val residenceAdress: String = "",
-    val destinationAdress: String = ""
+    var fio: String = "",
+    var date: String = "",
+    var phoneNumber: String = "",
+    var reason: String = "",
+    var exitTime: String = "",
+    var resetingTime: String = "",
+    var residenceAdress: String = "",
+    var destinationAdress: String = ""
 ) : Parcelable

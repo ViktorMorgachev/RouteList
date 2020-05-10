@@ -1,11 +1,8 @@
 package com.sedi.routelist.models
 
-import android.os.AsyncTask
+import com.sedi.routelist.commons.asynkExecute
 import com.sedi.routelist.presenters.IResultCalback
 
-fun replaceNotice() {
-
-}
 
 fun convertNoticeItemToRoomModel(notice: Notice) =
     NoticeRoomModel().apply {
@@ -30,14 +27,50 @@ fun convertRoomModelToNotice(noticeRoomModel: NoticeRoomModel) = Notice(
     destinationAdress = noticeRoomModel.destinationAdress
 )
 
-fun asynkSaveNotice(noticeRoomModel: NoticeRoomModel, resultCallback: IResultCalback) {
-    AsyncTask.execute {
-        Runnable {
-
+fun asynkInsertNotice(
+    noticeRoomModel: NoticeRoomModel,
+    resultCallback: IResultCalback,
+    db: NoticeItemDatabase, key: Int
+) {
+    asynkExecute {
+        Thread.currentThread().name = "Database Thread"
+        noticeRoomModel.primaryKey = key
+        try {
+            db.noticeDAO().insert(noticeRoomModel)
+            resultCallback.onSucces("Успешно сохранено")
+        } catch (e: Exception) {
+            resultCallback.onError(e)
         }
     }
 }
 
-fun asynkGetNoticeByIDs(id: Int, resultCallback: IResultCalback) {
+fun asynkGetAllNotices(
+    resultCallback: IResultCalback,
+    db: NoticeItemDatabase
+) {
+    asynkExecute {
+        Thread.currentThread().name = "Database Thread"
+
+        try {
+            val notices = db.noticeDAO().getAllNotices()
+            resultCallback.onSucces(notices = notices)
+        } catch (e: Exception) {
+            resultCallback.onError(e)
+        }
+    }
+
+}
+
+fun asynkDeleteNotice(resultCallback: IResultCalback, db: NoticeItemDatabase) {
+    asynkExecute {
+        Thread.currentThread().name = "Database Thread"
+
+        try {
+            val notices = db.noticeDAO().getAllNotices()
+            resultCallback.onSucces(notices = notices)
+        } catch (e: Exception) {
+            resultCallback.onError(e)
+        }
+    }
 
 }

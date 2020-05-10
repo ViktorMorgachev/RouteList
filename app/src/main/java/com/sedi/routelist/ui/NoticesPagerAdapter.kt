@@ -1,5 +1,6 @@
 package com.sedi.routelist.ui
 
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -20,8 +21,5 @@ class NoticesPagerAdapter(fm: FragmentManager, behavior: Int) :
     fun addFragment(fragment: Fragment) {
         mFragmentList.add(fragment)
     }
-
-
-
 
 }
