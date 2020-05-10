@@ -1,7 +1,8 @@
 package com.sedi.routelist.commons
 
 import android.os.AsyncTask
-import android.text.Editable
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun asynkExecute(action: (() -> Unit)) {
     AsyncTask.execute {
@@ -9,4 +10,14 @@ fun asynkExecute(action: (() -> Unit)) {
             action()
         }.start()
     }
+}
+
+fun getCurrentDate(): String {
+    val sdf = SimpleDateFormat("dd.MM.yyyy", Locale.ROOT)
+    return sdf.format(Date())
+}
+
+fun getCurrentTime(): String {
+    val sdf = SimpleDateFormat("hh:mm", Locale.ROOT)
+    return sdf.format(Date())
 }

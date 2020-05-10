@@ -10,7 +10,7 @@ import com.sedi.routelist.R
 import com.sedi.routelist.commons.LOG_LEVEL
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.databinding.RouteListFragmentBinding
-import com.sedi.routelist.models.ExtraNames
+import com.sedi.routelist.commons.ExtraNames
 import com.sedi.routelist.models.Notice
 import com.sedi.routelist.presenters.IClickListener
 import com.sedi.routelist.ui.MainActivity

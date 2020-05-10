@@ -1,4 +1,4 @@
-package com.sedi.routelist.models;
+package com.sedi.routelist.commons;
 
 import androidx.annotation.StringDef;
 
