@@ -7,15 +7,18 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.sedi.routelist.R
+import com.sedi.routelist.commons.LOG_LEVEL
+import com.sedi.routelist.commons.log
 import com.sedi.routelist.databinding.RouteListFragmentBinding
 import com.sedi.routelist.models.ExtraNames
 import com.sedi.routelist.models.Notice
 import com.sedi.routelist.presenters.IClickListener
+import com.sedi.routelist.ui.MainActivity
 import com.sedi.routelist.ui.NoticesPagerAdapter
 import kotlinx.android.synthetic.main.route_list_fragment.*
 
 
-class NoticeFragment : Fragment() {
+class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback {
 
     //Data
     lateinit var binding: RouteListFragmentBinding
@@ -56,8 +59,8 @@ class NoticeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        pagerAdapter.currentNotice = notice!!
-        pagerAdapter.currentPosition = position!!
+        pagerAdapter.noticeFragmentHelper.currentNotice = notice!!
+        pagerAdapter.noticeFragmentHelper.currentPosition = position!!
     }
 
     private fun initNotice() {
@@ -76,6 +79,7 @@ class NoticeFragment : Fragment() {
         super.onCreate(savedInstanceState)
         notice = parseArguments()
     }
+
 
     private fun parseArguments(): Notice? {
         return arguments?.getParcelable<Notice>(ExtraNames.KeysField.KEY_EXTRA_NOTICE)
@@ -107,6 +111,15 @@ class NoticeFragment : Fragment() {
                 }
                 configurateFragment(saveClickListener, noticesPagerAdapter, position)
             }
+    }
+
+    override fun pastNotice(notice: Notice) {
+        try {
+            this.notice = notice
+        } catch (e: Exception) {
+            e.message?.let { log(LOG_LEVEL.ERROR, it) }
+        }
+
     }
 
 }

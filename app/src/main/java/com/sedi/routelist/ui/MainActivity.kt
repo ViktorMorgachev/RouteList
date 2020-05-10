@@ -3,6 +3,7 @@ package com.sedi.routelist.ui
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.LifecycleObserver
@@ -54,6 +55,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         )
         if (notices.isEmpty()) {
             pagerAdapter.addFragment(NoticeFragment.instance(Notice(), this, pagerAdapter, 0))
+            pagerAdapter.addFragment(NoticeFragment.instance(Notice(), this, pagerAdapter, 1))
         } else
             notices.forEachIndexed { index, notice ->
                 pagerAdapter.addFragment(NoticeFragment.instance(notice, this, pagerAdapter, index))
@@ -78,10 +80,6 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         )
     }
 
-    override fun onSingleComplete(data: NoticeRoomModel?) {
-        TODO("Not yet implemented")
-    }
-
     override fun onSucces(answer: String, notices: List<Notice>) {
         if (!answer.isEmpty()) {
             showToast(this, answer)
@@ -89,21 +87,57 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
     }
 
     fun addNotice(item: MenuItem) {
-
-    }
-
-    fun deleteNotice(item: MenuItem) {
-        // Remove current list and delete current Notice from DB
-        pagerAdapter.removeFragment(pagerAdapter.getItem(pagerAdapter.currentPosition))
-        asynkDeleteNotice(
-            this,
-            MyApplication.instance.getDB(this),
-            convertNoticeItemToRoomModel(pagerAdapter.currentNotice)
+        pagerAdapter.addFragment(
+            NoticeFragment.instance(
+                Notice(),
+                this,
+                pagerAdapter,
+                pagerAdapter.count + 1
+            )
         )
     }
 
-    fun copyNotice(item: MenuItem) {}
-    fun pasteNotice(item: MenuItem) {}
+    fun deleteNotice(item: MenuItem) {
 
+        //Временный костыль
+        if (pagerAdapter.count == 1) {
+            showToast(this, "Минимум должн быть один маршрутный лист")
+            return
+        }
+        // Remove current list and delete current Notice from DB
+        pagerAdapter.removeFragment(pagerAdapter.getItem(pagerAdapter.noticeFragmentHelper.currentPosition))
+        asynkDeleteNotice(
+            this,
+            MyApplication.instance.getDB(this),
+            convertNoticeItemToRoomModel(pagerAdapter.noticeFragmentHelper.currentNotice)
+        )
+    }
+
+    fun copyNotice(item: MenuItem) {
+        pagerAdapter.noticeFragmentHelper.noticeForCopy =
+            pagerAdapter.noticeFragmentHelper.currentNotice
+    }
+
+    fun pasteNotice(item: MenuItem) {
+        if (pagerAdapter.noticeFragmentHelper.noticeForCopy == null) {
+            showToast(this, "Скопируйте перед вставкой", Toast.LENGTH_SHORT)
+            return
+        }
+        try {
+            (pagerAdapter.getItem(pagerAdapter.noticeFragmentHelper.currentPosition) as PastNoticeCallback).pastNotice(
+                pagerAdapter.noticeFragmentHelper.noticeForCopy!!
+            )
+        } catch (e: ClassCastException) {
+            onError(e)
+        } catch (e: Exception) {
+            onError(e)
+        }
+
+    }
+
+
+    interface PastNoticeCallback {
+        fun pastNotice(notice: Notice)
+    }
 
 }

@@ -8,8 +8,7 @@ import com.sedi.routelist.models.Notice
 class NoticesPagerAdapter(fm: FragmentManager, behavior: Int) :
     FragmentStatePagerAdapter(fm, behavior) {
 
-    var currentPosition: Int = 0;
-    var currentNotice: Notice = Notice()
+    val noticeFragmentHelper = NoticeFragmentHelper()
     private val mFragmentList: ArrayList<Fragment> = ArrayList()
 
     override fun getItem(position: Int): Fragment {
@@ -29,5 +28,10 @@ class NoticesPagerAdapter(fm: FragmentManager, behavior: Int) :
         notifyDataSetChanged()
     }
 
+    class NoticeFragmentHelper() {
+        var currentPosition: Int = 0;
+        var currentNotice: Notice = Notice()
+        var noticeForCopy: Notice? = null
+    }
 
 }
