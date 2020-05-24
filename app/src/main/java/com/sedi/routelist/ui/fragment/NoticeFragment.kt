@@ -1,16 +1,17 @@
 package com.sedi.routelist.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.sedi.routelist.R
+import com.sedi.routelist.commons.ExtraNames
 import com.sedi.routelist.commons.LOG_LEVEL
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.databinding.RouteListFragmentBinding
-import com.sedi.routelist.commons.ExtraNames
 import com.sedi.routelist.models.Notice
 import com.sedi.routelist.presenters.IClickListener
 import com.sedi.routelist.ui.MainActivity
@@ -61,6 +62,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback {
         super.onResume()
         pagerAdapter.noticeFragmentHelper.currentNotice = notice!!
         pagerAdapter.noticeFragmentHelper.currentPosition = position!!
+        log(LOG_LEVEL.INFO, "Current position: $position")
     }
 
     private fun initNotice() {
@@ -79,6 +81,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback {
         super.onCreate(savedInstanceState)
         notice = parseArguments()
     }
+
 
 
     private fun parseArguments(): Notice? {
@@ -116,6 +119,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback {
     override fun pastNotice(notice: Notice) {
         try {
             this.notice = notice
+            binding.routeNotice = notice
         } catch (e: Exception) {
             e.message?.let { log(LOG_LEVEL.ERROR, it) }
         }

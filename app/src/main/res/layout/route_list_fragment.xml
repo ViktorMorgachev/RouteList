@@ -16,6 +16,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
@@ -112,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:hint="Время выхода"
-                android:inputType="time"
+                android:inputType="text"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:text="@{routeNotice.exitTime}"
@@ -132,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:hint="Время возврата"
-                android:inputType="time"
+                android:inputType="text"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:text="@{routeNotice.resetingTime}"

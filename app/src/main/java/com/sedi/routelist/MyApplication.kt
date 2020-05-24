@@ -1,5 +1,6 @@
 package com.sedi.routelist
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import com.sedi.routelist.models.NoticeItemDatabase
@@ -17,5 +18,5 @@ class MyApplication : Application() {
             private set
     }
 
-    fun getDB(context: Context) = NoticeItemDatabase.invoke(this)
+    fun getDB(activity: Activity) = NoticeItemDatabase.invoke(activity)
 }

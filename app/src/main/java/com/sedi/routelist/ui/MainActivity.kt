@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.showToast
@@ -92,7 +93,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
                 Notice(),
                 this,
                 pagerAdapter,
-                pagerAdapter.count + 1
+                pagerAdapter.count
             )
         )
     }
@@ -101,11 +102,11 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
         //Временный костыль
         if (pagerAdapter.count == 1) {
-            showToast(this, "Минимум должн быть один маршрутный лист")
+            showToast(this, "Минимум должен быть один маршрутный лист")
             return
         }
         // Remove current list and delete current Notice from DB
-        pagerAdapter.removeFragment(pagerAdapter.getItem(pagerAdapter.noticeFragmentHelper.currentPosition))
+        pagerAdapter.removeFragment(pagerAdapter.getItem(pagerAdapter.noticeFragmentHelper.currentPosition - 1))
         asynkDeleteNotice(
             this,
             MyApplication.instance.getDB(this),
@@ -124,7 +125,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             return
         }
         try {
-            (pagerAdapter.getItem(pagerAdapter.noticeFragmentHelper.currentPosition) as PastNoticeCallback).pastNotice(
+            (pagerAdapter.getItem(pagerAdapter.noticeFragmentHelper.currentPosition - 1) as PastNoticeCallback).pastNotice(
                 pagerAdapter.noticeFragmentHelper.noticeForCopy!!
             )
         } catch (e: ClassCastException) {

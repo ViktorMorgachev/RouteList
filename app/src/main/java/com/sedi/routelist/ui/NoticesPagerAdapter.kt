@@ -21,6 +21,9 @@ class NoticesPagerAdapter(fm: FragmentManager, behavior: Int) :
 
     fun addFragment(fragment: Fragment) {
         mFragmentList.add(fragment)
+
+        notifyDataSetChanged()
+
     }
 
     fun removeFragment(fragment: Fragment) {
