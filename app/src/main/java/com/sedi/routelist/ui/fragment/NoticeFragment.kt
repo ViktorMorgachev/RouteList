@@ -1,10 +1,15 @@
 package com.sedi.routelist.ui.fragment
 
+import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
+import android.widget.TimePicker
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.sedi.routelist.R
@@ -19,7 +24,8 @@ import com.sedi.routelist.ui.NoticesPagerAdapter
 import kotlinx.android.synthetic.main.route_list_fragment.*
 
 
-class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback {
+class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
+    DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     //Data
     lateinit var binding: RouteListFragmentBinding
@@ -29,6 +35,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback {
     // Logic
     private lateinit var pagerAdapter: NoticesPagerAdapter
     private var position: Int? = null
+    private var editableView: View? = null // Поле которое редактируется
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,15 +54,59 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback {
         binding.routeNotice = notice
 
         binding.executePendingBindings()
+
+
+        initListeners()
+
+
+
+        return binding.root
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initListeners() {
         binding.btnSave.setOnClickListener {
             if (notice != null && position != null) {
                 initNotice()
                 clickListener.onSave(notice!!, position!!)
             }
-
         }
-
-        return binding.root
+        binding.etDate.setOnTouchListener { _, event ->
+            val action = event.action
+            if (action == MotionEvent.ACTION_DOWN) {
+                var text = et_date.text.toString()
+                var date = text.split(".")
+                if (context != null && date.size == 3)
+                    DatePickerDialog(
+                        context!!,
+                        this,
+                        date[2].toInt(),
+                        date[1].toInt(),
+                        date[0].toInt()
+                    ).show()
+            }
+            true
+        }
+        binding.etExitTime.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                var text = et_exit_time.text.toString()
+                var time = text.split(":")
+                if (context != null && time.size == 2)
+                    startTimePickerDialog(time[0].toInt(), time[1].toInt())
+                editableView = v
+            }
+            true
+        }
+        binding.etResetingTime.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                var text = et_reseting_time.text.toString()
+                var time = text.split(":")
+                if (context != null && time.size == 2)
+                    startTimePickerDialog(time[0].toInt(), time[1].toInt())
+                editableView = v
+            }
+            true
+        }
     }
 
     override fun onResume() {
@@ -82,6 +133,16 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback {
         notice = parseArguments()
     }
 
+
+    private fun startTimePickerDialog(hour: Int, minute: Int) {
+        TimePickerDialog(
+            context!!,
+            this,
+            hour,
+            minute,
+            true
+        ).show()
+    }
 
 
     private fun parseArguments(): Notice? {
@@ -125,5 +186,52 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback {
         }
 
     }
+
+    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        try {
+            val monthStr = month.toString()
+            val dayStr = dayOfMonth.toString()
+            val monthResult = when (monthStr.length) {
+                2 -> monthStr
+                else -> "0$monthStr"
+            }
+            val dayResult = when (dayStr.length) {
+                2 -> dayStr
+                else -> "0$dayStr"
+            }
+            this.notice!!.date = "$dayResult.$monthResult.$year"
+            binding.routeNotice?.date = notice!!.date
+            binding.etDate.setText(binding.routeNotice?.date)
+        } catch (e: Exception) {
+            e.message?.let { log(LOG_LEVEL.ERROR, it) }
+        }
+
+    }
+
+    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+        try {
+            val minuteStr = minute.toString()
+            val minuteResult = when (minuteStr.length) {
+                2 -> minuteStr
+                else -> "0$minute"
+            }
+            when (editableView) {
+                binding.etExitTime -> {
+                    this.notice!!.exitTime = "$hourOfDay:${minuteResult}"
+                    binding.routeNotice?.exitTime = notice!!.exitTime
+                    binding.etExitTime.setText(binding.routeNotice?.exitTime)
+                }
+                binding.etResetingTime -> {
+                    this.notice!!.resetingTime = "$hourOfDay:$minuteResult"
+                    binding.routeNotice?.resetingTime = notice!!.resetingTime
+                    binding.etResetingTime.setText(binding.routeNotice?.resetingTime)
+                }
+
+            }
+        } catch (e: Exception) {
+            e.message?.let { log(LOG_LEVEL.ERROR, it) }
+        }
+    }
+
 
 }

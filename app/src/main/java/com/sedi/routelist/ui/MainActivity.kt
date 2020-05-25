@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.showToast
@@ -31,6 +30,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
         viewPager = findViewById(R.id.notice_view_pager)
 
+        MyApplication.instance.initDB(this)
         initNotices()
 
         tabLayout = findViewById(R.id.tab_layout)
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
 
     private fun initNotices() {
-        asynkGetAllNotices(this, MyApplication.instance.getDB(this))
+        asynkGetAllNotices(this, MyApplication.instance.getDB())
     }
 
     private fun setupViewPager(notices: List<Notice>) {
@@ -55,11 +55,17 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
         )
         if (notices.isEmpty()) {
-            pagerAdapter.addFragment(NoticeFragment.instance(Notice(), this, pagerAdapter, 0))
             pagerAdapter.addFragment(NoticeFragment.instance(Notice(), this, pagerAdapter, 1))
         } else
             notices.forEachIndexed { index, notice ->
-                pagerAdapter.addFragment(NoticeFragment.instance(notice, this, pagerAdapter, index))
+                pagerAdapter.addFragment(
+                    NoticeFragment.instance(
+                        notice,
+                        this,
+                        pagerAdapter,
+                        index + 1
+                    )
+                )
             }
         viewPager.adapter = pagerAdapter
     }
@@ -68,7 +74,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         asynkInsertNotice(
             convertNoticeItemToRoomModel(notice),
             this,
-            MyApplication.instance.getDB(this),
+            MyApplication.instance.getDB(),
             position
         );
     }
@@ -109,7 +115,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         pagerAdapter.removeFragment(pagerAdapter.getItem(pagerAdapter.noticeFragmentHelper.currentPosition - 1))
         asynkDeleteNotice(
             this,
-            MyApplication.instance.getDB(this),
+            MyApplication.instance.getDB(),
             convertNoticeItemToRoomModel(pagerAdapter.noticeFragmentHelper.currentNotice)
         )
     }

@@ -2,15 +2,16 @@ package com.sedi.routelist
 
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import com.sedi.routelist.models.NoticeItemDatabase
 
 class MyApplication : Application() {
 
+    lateinit var noticeItemDatabase: NoticeItemDatabase
 
     override fun onCreate() {
         super.onCreate()
         instance = this
+
     }
 
     companion object {
@@ -18,5 +19,9 @@ class MyApplication : Application() {
             private set
     }
 
-    fun getDB(activity: Activity) = NoticeItemDatabase.invoke(activity)
+    fun initDB(activity: Activity) {
+        activity.runOnUiThread { noticeItemDatabase = NoticeItemDatabase.invoke(activity) }
+    }
+
+    fun getDB() = noticeItemDatabase
 }
