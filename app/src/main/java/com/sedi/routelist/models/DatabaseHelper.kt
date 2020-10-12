@@ -1,6 +1,8 @@
 package com.sedi.routelist.models
 
 import android.app.Activity
+import com.sedi.routelist.MyApplication
+import com.sedi.routelist.R
 import com.sedi.routelist.commons.asynkExecute
 import com.sedi.routelist.presenters.IResultCalback
 
@@ -40,7 +42,7 @@ fun asynkInsertNotice(
         noticeRoomModel.primaryKey = key
         try {
             db.noticeDAO().insert(noticeRoomModel)
-            resultCallback.onSucces("Успешно сохранено")
+            resultCallback.onSucces(MyApplication.instance.resources.getString(R.string.sucess_deleted))
         } catch (e: Exception) {
             resultCallback.onError(e)
         }
@@ -81,7 +83,7 @@ fun asynkDeleteNotice(
 
         try {
             db.noticeDAO().delete(noticeRoomModel)
-            resultCallback.onSucces("Успешно удалено")
+            resultCallback.onSucces(MyApplication.instance.resources.getString(R.string.sucess_deleted))
         } catch (e: Exception) {
             resultCallback.onError(e)
         }

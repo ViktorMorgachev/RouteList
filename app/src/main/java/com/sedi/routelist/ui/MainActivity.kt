@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
         //Временный костыль
         if (pagerAdapter.count == 1) {
-            showToast(this, "Минимум должен быть один маршрутный лист")
+            showToast(this, MyApplication.instance.resources.getString(R.string.minimum_must_have_list))
             return
         }
         // Remove current list and delete current Notice from DB
@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
     fun pasteNotice(item: MenuItem) {
         if (pagerAdapter.noticeFragmentHelper.noticeForCopy == null) {
-            showToast(this, "Скопируйте перед вставкой", Toast.LENGTH_SHORT)
+            showToast(this, MyApplication.instance.resources.getString(R.string.copy_before_paste), Toast.LENGTH_SHORT)
             return
         }
         try {

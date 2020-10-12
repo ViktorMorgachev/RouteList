@@ -16,57 +16,52 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="20dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:orientation="vertical">
 
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Дата"
+                android:text="@string/date"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="Дата"
+                android:hint="@string/date"
                 android:inputType="date"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text="@{routeNotice.date}"
-                tools:ignore="HardcodedText" />
+                android:text="@{routeNotice.date}" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="ФИО"
+                android:text="@string/fio"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_fio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="Введите ФИО"
+                android:hint="@string/input_fio"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text="@{routeNotice.fio}"
-                tools:ignore="HardcodedText" />
+                android:text="@{routeNotice.fio}" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Номер телефона"
+                android:text="@string/phone_number"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_phone"
@@ -77,105 +72,94 @@
                 android:inputType="phone"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text="@{routeNotice.phoneNumber}"
-                tools:ignore="HardcodedText" />
+                android:text="@{routeNotice.phoneNumber}" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Причина выхода"
+                android:text="@string/reason_to_exit"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_reason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="Причина выхода"
+                android:hint="@string/reason_to_exit"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text="@{routeNotice.reason}"
-                tools:ignore="HardcodedText" />
+                android:text="@{routeNotice.reason}" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Время выхода"
+                android:text="@string/time_to_exit"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_exit_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="Время выхода"
+                android:hint="@string/time_to_exit"
                 android:inputType="text"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text="@{routeNotice.exitTime}"
-                tools:ignore="HardcodedText" />
+                android:text="@{routeNotice.exitTime}" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Время возврата"
+                android:text="@string/resetting_time"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_reseting_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="Время возврата"
+                android:hint="@string/resetting_time"
                 android:inputType="text"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text="@{routeNotice.resetingTime}"
-                tools:ignore="HardcodedText" />
+                android:text="@{routeNotice.resetingTime}" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Адрес жительства"
+                android:text="@string/residence_adress"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_residence_adress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="Адрес места жительства"
+                android:hint="@string/residence_adress"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text="@{routeNotice.residenceAdress}"
-                tools:ignore="HardcodedText" />
+                android:text="@{routeNotice.residenceAdress}" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Адрес назначения"
+                android:text="@string/destination_adress"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_destination_adress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="Адрес пункта назначения"
+                android:hint="@string/destination_adress2"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text="@{routeNotice.destinationAdress}"
-                tools:ignore="HardcodedText" />
+                android:text="@{routeNotice.destinationAdress}" />
 
             <View
                 android:layout_width="match_parent"
@@ -188,7 +172,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="40dp"
                 android:background="@android:color/holo_blue_dark"
-                android:text="Сохранить"
+                android:text="@string/save"
                 android:textColor="@android:color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />

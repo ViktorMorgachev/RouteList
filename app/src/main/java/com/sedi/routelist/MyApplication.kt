@@ -8,7 +8,8 @@ import com.sedi.routelist.models.NoticeItemDatabase
 class MyApplication : Application() {
 
 
-     private lateinit var noticeItemDatabase: NoticeItemDatabase
+    private lateinit var noticeItemDatabase: NoticeItemDatabase
+
 
     override fun onCreate() {
         super.onCreate()

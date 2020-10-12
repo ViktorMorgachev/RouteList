@@ -6,25 +6,21 @@
     <item
         android:id="@+id/menu_add_list"
         android:icon="@drawable/ic_note_add_24dp"
-        android:title="Добавить"
-        android:onClick="addNotice"
-        tools:ignore="HardcodedText" />
+        android:title="@string/add"
+        android:onClick="addNotice"/>
     <item
         android:id="@+id/menu_remove_list"
         android:icon="@drawable/ic_delete_24dp"
-        android:title="Удалить"
-        android:onClick="deleteNotice"
-        tools:ignore="HardcodedText" />
+        android:title="@string/delete"
+        android:onClick="deleteNotice" />
     <item
         android:id="@+id/menu_copy_list"
         android:icon="@drawable/ic_copy_24dp"
-        android:title="Копировать"
-        android:onClick="copyNotice"
-        tools:ignore="HardcodedText" />
+        android:title="@string/copy"
+        android:onClick="copyNotice"/>
     <item
         android:id="@+id/menu_paste"
         android:icon="@drawable/ic_paste_24dp"
-        android:title="Вставить"
-        android:onClick="pasteNotice"
-        tools:ignore="HardcodedText" />
+        android:title="@string/paste"
+        android:onClick="pasteNotice" />
 </menu>

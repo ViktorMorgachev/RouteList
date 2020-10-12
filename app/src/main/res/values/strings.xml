@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">RouteList</string>
+    <string name="sucess_deleted">Успешно удалено</string>
+    <string name="minimum_must_have_list">Минимум должен быть один маршрутный лист</string>
+    <string name="copy_before_paste">Скопируйте перед вставкой</string>
+    <string name="date">Дата</string>
+    <string name="fio">ФИО</string>
+    <string name="input_fio">Введите ФИО</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="reason_to_exit">Причина выхода</string>
+    <string name="time_to_exit">Время выхода</string>
+    <string name="resetting_time">Время возврата</string>
+    <string name="residence_adress">Адрес жительства</string>
+    <string name="destination_adress">Адрес назначения</string>
+    <string name="destination_adress2">Адрес пункта назначения</string>
+    <string name="save">Сохранить</string>
+    <string name="add">Добавить</string>
+    <string name="delete">Удалить</string>
+    <string name="copy">Копировать</string>
+    <string name="paste">Вставить</string>
 </resources>
