@@ -6,10 +6,7 @@ import com.sedi.routelist.models.NoticeRoomModel
 
 @Dao
 interface NoticeDao {
-
-    @Query("SELECT * FROM NoticeRoomModel WHERE primaryKey = :key")
-    fun getNoticeByKey(key: Int): Notice
-
+    
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(noticeItem: NoticeRoomModel)
 
@@ -20,6 +17,6 @@ interface NoticeDao {
     fun update(noticeItem: NoticeRoomModel)
 
     @Query("SELECT * FROM NoticeRoomModel")
-    fun getAllNotices(): List<Notice>
+    fun getAllNotices(): List<NoticeRoomModel>
 
 }

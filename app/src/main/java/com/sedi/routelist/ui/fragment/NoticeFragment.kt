@@ -113,6 +113,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         super.onResume()
         pagerAdapter.noticeFragmentHelper.currentNotice = notice!!
         pagerAdapter.noticeFragmentHelper.currentPosition = position!!
+        notice?.dbKey = position!!
         log(LOG_LEVEL.INFO, "Current position: $position")
     }
 
@@ -131,6 +132,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         notice = parseArguments()
+
     }
 
 

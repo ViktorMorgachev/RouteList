@@ -1,11 +1,13 @@
 package com.sedi.routelist.models
 
+import android.app.Activity
 import com.sedi.routelist.commons.asynkExecute
 import com.sedi.routelist.presenters.IResultCalback
 
 
 fun convertNoticeItemToRoomModel(notice: Notice) =
     NoticeRoomModel().apply {
+        primaryKey = notice.dbKey
         fio = notice.fio
         date = notice.date
         phoneNumber = notice.phoneNumber
@@ -17,6 +19,7 @@ fun convertNoticeItemToRoomModel(notice: Notice) =
     }
 
 fun convertRoomModelToNotice(noticeRoomModel: NoticeRoomModel) = Notice(
+    dbKey = noticeRoomModel.primaryKey,
     fio = noticeRoomModel.fio,
     date = noticeRoomModel.date,
     phoneNumber = noticeRoomModel.phoneNumber,
@@ -45,6 +48,7 @@ fun asynkInsertNotice(
 }
 
 fun asynkGetAllNotices(
+    activity: Activity,
     resultCallback: IResultCalback,
     db: NoticeItemDatabase
 ) {
@@ -53,20 +57,30 @@ fun asynkGetAllNotices(
 
         try {
             val notices = db.noticeDAO().getAllNotices()
-            resultCallback.onSucces(notices = notices)
+            val listOfNotices: ArrayList<Notice> = ArrayList()
+            notices.forEach {
+                listOfNotices.add(convertRoomModelToNotice(it))
+            }
+            activity.runOnUiThread { resultCallback.onSucces(notices = listOfNotices) }
         } catch (e: Exception) {
-            resultCallback.onError(e)
+            activity.runOnUiThread {  resultCallback.onError(e) }
+
         }
+
     }
 
 }
 
-fun asynkDeleteNotice(resultCallback: IResultCalback, db: NoticeItemDatabase, noticeRoomModel: NoticeRoomModel) {
+fun asynkDeleteNotice(
+    resultCallback: IResultCalback,
+    db: NoticeItemDatabase,
+    noticeRoomModel: NoticeRoomModel
+) {
     asynkExecute {
         Thread.currentThread().name = "Database Thread"
 
         try {
-            val notices = db.noticeDAO().delete(noticeRoomModel)
+            db.noticeDAO().delete(noticeRoomModel)
             resultCallback.onSucces("Успешно удалено")
         } catch (e: Exception) {
             resultCallback.onError(e)

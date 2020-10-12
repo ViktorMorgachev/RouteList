@@ -2,11 +2,13 @@ package com.sedi.routelist
 
 import android.app.Activity
 import android.app.Application
+import android.os.AsyncTask
 import com.sedi.routelist.models.NoticeItemDatabase
 
 class MyApplication : Application() {
 
-    lateinit var noticeItemDatabase: NoticeItemDatabase
+
+     private lateinit var noticeItemDatabase: NoticeItemDatabase
 
     override fun onCreate() {
         super.onCreate()
@@ -20,7 +22,7 @@ class MyApplication : Application() {
     }
 
     fun initDB(activity: Activity) {
-        activity.runOnUiThread { noticeItemDatabase = NoticeItemDatabase.invoke(activity) }
+        noticeItemDatabase = NoticeItemDatabase.invoke(activity)
     }
 
     fun getDB() = noticeItemDatabase

@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
+import com.sedi.routelist.commons.asynkExecute
 import com.sedi.routelist.commons.showToast
 import com.sedi.routelist.models.*
 import com.sedi.routelist.presenters.IClickListener
@@ -30,11 +31,16 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
         viewPager = findViewById(R.id.notice_view_pager)
 
-        MyApplication.instance.initDB(this)
+        runOnUiThread {
+            MyApplication.instance.initDB(this)
+        }
+
         initNotices()
+
 
         tabLayout = findViewById(R.id.tab_layout)
         tabLayout.setupWithViewPager(viewPager, true)
+
 
     }
 
@@ -46,7 +52,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
 
     private fun initNotices() {
-        asynkGetAllNotices(this, MyApplication.instance.getDB())
+        asynkGetAllNotices(this, this,  MyApplication.instance.getDB())
     }
 
     private fun setupViewPager(notices: List<Notice>) {
@@ -55,7 +61,14 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
         )
         if (notices.isEmpty()) {
-            pagerAdapter.addFragment(NoticeFragment.instance(Notice(), this, pagerAdapter, 1))
+            pagerAdapter.addFragment(
+                NoticeFragment.instance(
+                    Notice(dbKey = 1),
+                    this,
+                    pagerAdapter,
+                    1
+                )
+            )
         } else
             notices.forEachIndexed { index, notice ->
                 pagerAdapter.addFragment(
@@ -88,7 +101,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
     }
 
     override fun onSucces(answer: String, notices: List<Notice>) {
-        if (!answer.isEmpty()) {
+        if (answer.isNotEmpty()) {
             showToast(this, answer)
         } else setupViewPager(notices)
     }

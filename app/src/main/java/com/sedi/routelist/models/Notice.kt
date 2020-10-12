@@ -7,6 +7,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Notice(
+    var dbKey: Int = 0,
     var fio: String = "",
     var date: String = getCurrentDate(),
     var phoneNumber: String = "",

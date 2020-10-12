@@ -12,6 +12,15 @@ fun asynkExecute(action: (() -> Unit)) {
     }
 }
 
+fun asynkExecutePostAction(action: (() -> Unit), postAction: (()->Unit)) {
+    AsyncTask.execute {
+        Thread() {
+            action()
+            postAction()
+        }.start()
+    }
+}
+
 fun getCurrentDate(): String {
     val sdf = SimpleDateFormat("dd.MM.yyyy", Locale.ROOT)
     return sdf.format(Date())
