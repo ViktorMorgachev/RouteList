@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sucess_deleted">Ийгиликтүү өчүрүлдү</string>
+    <string name="minimum_must_have_list">Минимум должен быть один маршрутный лист</string>
+    <string name="copy_before_paste">Минимум бир маршруттук жадыбал болууга тийиш</string>
+    <string name="date">Датасы</string>
+    <string name="fio">ФИО</string>
+    <string name="input_fio">Атын киргизип</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="reason_to_exit">Чыгарылышы себеп</string>
+    <string name="time_to_exit">Чыгуу убактысы</string>
+    <string name="resetting_time">Кайра убакыт</string>
+    <string name="residence_adress">Жашаган дареги</string>
+    <string name="destination_adress">Дайындалган дареги</string>
+    <string name="destination_adress2">Дайындалган пунктунун дареги</string>
+    <string name="save">Сактоо</string>
+    <string name="add">Кошуу</string>
+    <string name="delete">Таштоо</string>
+    <string name="copy">Көчүрүү</string>
+    <string name="paste">Кыстаруу</string>
+</resources>

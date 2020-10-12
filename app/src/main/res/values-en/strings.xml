@@ -1,6 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">RouteList</string>
-
     <string name="sucess_deleted">Успешно удалено</string>
     <string name="minimum_must_have_list">Минимум должен быть один маршрутный лист</string>
     <string name="copy_before_paste">Скопируйте перед вставкой</string>
