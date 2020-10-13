@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId "com.sedi.routelist"
         minSdkVersion 17
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -54,6 +54,9 @@ dependencies {
     implementation "com.google.android.material:material:${designSupportVersion}"
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
 
+    // Preference
+    // https://mvnrepository.com/artifact/androidx.preference/preference
+    implementation 'androidx.preference:preference:1.1.1'
 
 
     // Glide

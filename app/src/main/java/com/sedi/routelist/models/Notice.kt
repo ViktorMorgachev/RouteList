@@ -13,7 +13,7 @@ data class Notice(
     var phoneNumber: String = "",
     var reason: String = "",
     var exitTime: String = getCurrentTime(),
-    var resetingTime: String = "",
+    var resetingTime: String = getCurrentTime(),
     var residenceAdress: String = "",
     var destinationAdress: String = ""
 ) : Parcelable
