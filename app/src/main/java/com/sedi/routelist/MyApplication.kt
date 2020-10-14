@@ -16,15 +16,6 @@ class MyApplication : Application() {
         super.onCreate()
         instance = this
 
-        // Если первый запуск
-        if (PrefsManager.getIntance(applicationContext)
-                .getValue(PrefsManager.PrefsKey.FIRST_START, true) as Boolean
-        ) {
-            // То показываем диалог выбора языка при первом старте
-            PrefsManager.getIntance(applicationContext)
-                .setValue(PrefsManager.PrefsKey.FIRST_START, true)
-        }
-
     }
 
     companion object {

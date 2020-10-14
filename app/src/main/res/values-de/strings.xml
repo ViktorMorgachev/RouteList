@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sucess_deleted">Erfolgreich gelöscht</string>
+    <string name="minimum_must_have_list">Минимум должен быть один маршрутный лист</string>
+    <string name="copy_before_paste">Mindestens ein streckenblatt muss vorhanden sein</string>
+    <string name="date">Datum</string>
+    <string name="fio">NAME</string>
+    <string name="input_fio">Geben Sie Ihren Namen ein</string>
+    <string name="phone_number">Telefonnummer</string>
+    <string name="reason_to_exit">Der Grund für den Ausstieg</string>
+    <string name="time_to_exit">Ausstiegszeit</string>
+    <string name="resetting_time">Rücklaufzeit</string>
+    <string name="residence_adress">Wohnadresse</string>
+    <string name="destination_adress">Zieladresse</string>
+    <string name="destination_adress2">Zieladresse</string>
+    <string name="save">Speichern</string>
+    <string name="add">Hinzufügen</string>
+    <string name="delete">Entfernen</string>
+    <string name="copy">Kopieren</string>
+    <string name="paste">Einfügen</string>
+</resources>

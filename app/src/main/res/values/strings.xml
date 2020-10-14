@@ -19,4 +19,11 @@
     <string name="delete">Remove</string>
     <string name="copy">Copy</string>
     <string name="paste">Insert</string>
+
+
+    <string name="zh" translatable="false">中文</string>
+    <string name="en" translatable="false">English</string>
+    <string name="ky" translatable="false">Тил</string>
+    <string name="ru" translatable="false">Русский</string>
+    <string name="de" translatable="false">Germany</string>
 </resources>
