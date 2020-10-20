@@ -6,7 +6,7 @@ apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
@@ -26,7 +26,9 @@ android {
         }
     }
 
-    dataBinding.enabled = true
+    buildFeatures{
+        dataBinding = true
+    }
 
 }
 
@@ -61,7 +63,7 @@ dependencies {
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.9.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    kapt 'com.github.bumptech.glide:compiler:4.9.0'
     def work_version = "1.0.1"
 
     // (Java only)
