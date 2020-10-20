@@ -53,9 +53,12 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             )
             ChooseLanguageDialog(items, object : LanguageAdapter.ClickCallback {
                 override fun onClicked(language: String) {
-                    PrefsManager.getIntance(this@MainActivity)
-                        .setValue(PrefsManager.PrefsKey.LOCALE, language)
-                    updateLocale()
+                    if (language.isNotEmpty()) {
+                        PrefsManager.getIntance(this@MainActivity)
+                            .setValue(PrefsManager.PrefsKey.LOCALE, language)
+                        updateLocale()
+                    }
+                    initNotices()
                     viewPager.visibility = View.VISIBLE
                 }
 

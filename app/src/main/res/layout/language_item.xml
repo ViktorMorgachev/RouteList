@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/ll_language"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="10dp">
 
     <ImageView
         android:id="@+id/iv_flag"
-        android:layout_width="70dp"
-        android:layout_height="56dp" />
+        android:layout_width="30dp"
+        android:layout_height="30dp" />
 
     <TextView
         android:id="@+id/tv_flag_name"
@@ -19,7 +19,9 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:maxLines="1"
-        android:textSize="20sp"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
+        android:textSize="15sp"
         tools:text="Русский" />
 
 </LinearLayout>

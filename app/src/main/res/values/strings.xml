@@ -26,4 +26,5 @@
     <string name="ky" translatable="false">Тил</string>
     <string name="ru" translatable="false">Русский</string>
     <string name="de" translatable="false">Germany</string>
+    <string name="select_language">Выберите язык</string>
 </resources>

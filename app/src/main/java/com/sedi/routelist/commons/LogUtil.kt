@@ -7,7 +7,7 @@ enum class LOG_LEVEL {
     INFO, ERROR
 }
 
-fun log(log_level: LOG_LEVEL, message: String) {
+fun log(log_level: LOG_LEVEL = LOG_LEVEL.INFO, message: String) {
     if (!BuildConfig.DEBUG) return
     var tag = "RouteList"
     when (log_level) {
