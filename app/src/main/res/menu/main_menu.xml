@@ -23,4 +23,10 @@
         android:icon="@drawable/ic_paste_24dp"
         android:title="@string/paste"
         android:onClick="pasteNotice" />
+
+    <item
+        android:id="@+id/menu_change_locale"
+        android:icon="@drawable/ic_paste_24dp"
+        android:title="@string/change_locale"
+        android:onClick="change_locale" />s
 </menu>

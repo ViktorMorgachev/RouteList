@@ -42,7 +42,7 @@ fun asynkInsertNotice(
         noticeRoomModel.primaryKey = key
         try {
             db.noticeDAO().insert(noticeRoomModel)
-            resultCallback.onSucces(MyApplication.instance.resources.getString(R.string.sucess_deleted))
+            resultCallback.onSucces(MyApplication.instance.resources.getString(R.string.sucess_saved))
         } catch (e: Exception) {
             resultCallback.onError(e)
         }

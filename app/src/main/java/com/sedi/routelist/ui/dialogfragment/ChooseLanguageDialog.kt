@@ -17,16 +17,23 @@ import com.sedi.routelist.R
 import com.sedi.routelist.commons.LOG_LEVEL
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.models.Language
+import com.sedi.routelist.presenters.IAction
 import ru.sedi.customerclient.adapters.LanguageAdapter
 
 class ChooseLanguageDialog(
-    val items: ArrayList<Language>,
-    val clickCallback: LanguageAdapter.ClickCallback
+    private val action: IAction
 ) : DialogFragment() {
 
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-       return SelectLanguageDialog(requireContext(), items, clickCallback)
+        return SelectLanguageDialog(
+            requireContext(), arrayListOf(
+                Language(R.drawable.ic_china, R.string.zh, "zh"),
+                Language(R.drawable.ic_germany, R.string.de, "de"),
+                Language(R.drawable.ic_russia, R.string.ru, "ru"),
+                Language(R.drawable.ic_en, R.string.en, "en"),
+                Language(R.drawable.ic_kyrgyzstan, R.string.ky, "ky")
+            )
+        )
     }
 
     override fun onStart() {
@@ -38,8 +45,7 @@ class ChooseLanguageDialog(
 
     inner class SelectLanguageDialog(
         context: Context,
-        private val items: ArrayList<Language>,
-        val clickCallback: LanguageAdapter.ClickCallback
+        private val items: ArrayList<Language>
     ) : Dialog(context), View.OnClickListener {
 
 
@@ -58,12 +64,12 @@ class ChooseLanguageDialog(
             val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
             val mLayoutManager = LinearLayoutManager(context)
             recyclerView?.layoutManager = mLayoutManager
-            recyclerView?.adapter = LanguageAdapter(context, items, object :
-                LanguageAdapter.ClickCallback {
-                override fun onClicked(language: String) {
-                    clickCallback.onClicked(language)
+            recyclerView?.adapter = LanguageAdapter(context, items, object : IAction {
+                override fun action() {
+                    action.action()
                     dismiss()
                 }
+
             })
 
         }
@@ -75,14 +81,9 @@ class ChooseLanguageDialog(
         }
 
         override fun onClick(v: View?) {
+            action.action()
             dismiss()
         }
 
-    }
-
-    override fun onDestroy() {
-        log(LOG_LEVEL.INFO, "onDestroy()")
-        clickCallback.onClicked("")
-        super.onDestroy()
     }
 }

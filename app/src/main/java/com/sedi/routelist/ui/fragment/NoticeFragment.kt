@@ -4,12 +4,15 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TimePicker
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.sedi.routelist.R
@@ -55,7 +58,6 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
         binding.executePendingBindings()
 
-
         initListeners()
 
 
@@ -71,6 +73,26 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
                 clickListener.onSave(notice!!, position!!)
             }
         }
+
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                initNotice()
+            }
+
+        }
+
+        binding.etDestinationAdress.addTextChangedListener(textWatcher)
+        binding.etFio.addTextChangedListener(textWatcher)
+        binding.etPhone.addTextChangedListener(textWatcher)
+        binding.etReason.addTextChangedListener(textWatcher)
+        binding.etResidenceAdress.addTextChangedListener(textWatcher)
+
         binding.etDate.setOnTouchListener { _, event ->
             val action = event.action
             if (action == MotionEvent.ACTION_DOWN) {
@@ -78,7 +100,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
                 var date = text.split(".")
                 if (context != null && date.size == 3)
                     DatePickerDialog(
-                        context!!,
+                        requireContext(),
                         this,
                         date[2].toInt(),
                         date[1].toInt(),
@@ -138,7 +160,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
     private fun startTimePickerDialog(hour: Int, minute: Int) {
         TimePickerDialog(
-            context!!,
+            context,
             this,
             hour,
             minute,
@@ -204,9 +226,11 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
             this.notice!!.date = "$dayResult.$monthResult.$year"
             binding.routeNotice?.date = notice!!.date
             binding.etDate.setText(binding.routeNotice?.date)
+            initNotice()
         } catch (e: Exception) {
             e.message?.let { log(LOG_LEVEL.ERROR, it) }
         }
+
 
     }
 
@@ -230,6 +254,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
                 }
 
             }
+            initNotice()
         } catch (e: Exception) {
             e.message?.let { log(LOG_LEVEL.ERROR, it) }
         }

@@ -1,6 +1,7 @@
 package com.sedi.routelist.ui
 
-import android.app.Activity
+import android.app.PendingIntent.getActivity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -13,13 +14,15 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
+import com.sedi.routelist.commons.LOG_LEVEL
+import com.sedi.routelist.commons.log
 import com.sedi.routelist.commons.showToast
 import com.sedi.routelist.models.*
+import com.sedi.routelist.presenters.IAction
 import com.sedi.routelist.presenters.IClickListener
 import com.sedi.routelist.presenters.IResultCalback
 import com.sedi.routelist.ui.dialogfragment.ChooseLanguageDialog
 import com.sedi.routelist.ui.fragment.NoticeFragment
-import ru.sedi.customerclient.adapters.LanguageAdapter
 import java.util.*
 
 
@@ -43,28 +46,18 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         if (PrefsManager.getIntance(applicationContext)
                 .getValue(PrefsManager.PrefsKey.FIRST_START, true) as Boolean
         ) {
-            viewPager.visibility = View.GONE
-            val items = arrayListOf(
-                Language(R.drawable.ic_china, R.string.zh, "zh"),
-                Language(R.drawable.ic_germany, R.string.de, "de"),
-                Language(R.drawable.ic_russia, R.string.ru, "ru"),
-                Language(R.drawable.ic_en, R.string.en, "en"),
-                Language(R.drawable.ic_kyrgyzstan, R.string.ky, "ky")
-            )
-            ChooseLanguageDialog(items, object : LanguageAdapter.ClickCallback {
-                override fun onClicked(language: String) {
-                    if (language.isNotEmpty()) {
-                        PrefsManager.getIntance(this@MainActivity)
-                            .setValue(PrefsManager.PrefsKey.LOCALE, language)
-                        updateLocale()
-                    }
+            showLanguageChooseDialog(object : IAction {
+                override fun action() {
+                    updateLocale()
                     initNotices()
                     viewPager.visibility = View.VISIBLE
+                    refreshActivity()
                 }
 
-            }).show(supportFragmentManager, "MyCustomFragment")
+            })
+            viewPager.visibility = View.GONE
             PrefsManager.getIntance(applicationContext)
-                .setValue(PrefsManager.PrefsKey.FIRST_START, true)
+                .setValue(PrefsManager.PrefsKey.FIRST_START, false)
         } else {
             initNotices()
         }
@@ -78,13 +71,19 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
     }
 
+    fun showLanguageChooseDialog(action: IAction) {
+        ChooseLanguageDialog(action).show(supportFragmentManager, "MyCustomFragment")
+    }
+
     private fun updateLocale() {
+        MyApplication.instance.updateLocale()
         try {
             val res = resources
             val dm = res.displayMetrics
             val conf = res.configuration
             val localeCode: String =
                 PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, "ru") as String
+            log(LOG_LEVEL.INFO, "LocaleCode: $localeCode")
             conf.locale = Locale(localeCode)
             res.updateConfiguration(conf, dm)
         } catch (e: java.lang.Exception) {
@@ -132,6 +131,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
     }
 
     override fun onSave(notice: Notice, position: Int) {
+        log(LOG_LEVEL.INFO, "SaveNotice: $position")
         asynkInsertNotice(
             convertNoticeItemToRoomModel(notice),
             this,
@@ -154,18 +154,18 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         } else setupViewPager(notices)
     }
 
-    fun addNotice(item: MenuItem) {
+    fun addNotice(item: MenuItem?) {
         pagerAdapter.addFragment(
             NoticeFragment.instance(
                 Notice(),
                 this,
                 pagerAdapter,
-                pagerAdapter.count
+                pagerAdapter.count + 1
             )
         )
     }
 
-    fun deleteNotice(item: MenuItem) {
+    fun deleteNotice(item: MenuItem?) {
 
         //Временный костыль
         if (pagerAdapter.count == 1) {
@@ -176,6 +176,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             return
         }
         // Remove current list and delete current Notice from DB
+        pagerAdapter.noticeFragmentHelper.noticeForCopy = null
         pagerAdapter.removeFragment(pagerAdapter.getItem(pagerAdapter.noticeFragmentHelper.currentPosition - 1))
         asynkDeleteNotice(
             this,
@@ -184,12 +185,12 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         )
     }
 
-    fun copyNotice(item: MenuItem) {
+    fun copyNotice(item: MenuItem?) {
         pagerAdapter.noticeFragmentHelper.noticeForCopy =
             pagerAdapter.noticeFragmentHelper.currentNotice
     }
 
-    fun pasteNotice(item: MenuItem) {
+    fun pasteNotice(item: MenuItem?) {
         if (pagerAdapter.noticeFragmentHelper.noticeForCopy == null) {
             showToast(
                 this,
@@ -210,9 +211,27 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
     }
 
+    fun change_locale(item: MenuItem) {
+        showLanguageChooseDialog(object : IAction {
+            override fun action() {
+                updateLocale()
+                refreshActivity()
+            }
+        })
+    }
+
 
     interface PastNoticeCallback {
         fun pastNotice(notice: Notice)
     }
+
+    fun refreshActivity() {
+        val refresh = Intent(
+            this, MainActivity::class.java
+        )
+        finish()
+        startActivity(refresh)
+    }
+
 
 }

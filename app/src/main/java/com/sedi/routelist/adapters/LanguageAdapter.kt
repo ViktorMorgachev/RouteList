@@ -9,12 +9,16 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sedi.routelist.R
+import com.sedi.routelist.commons.LOG_LEVEL
+import com.sedi.routelist.commons.log
 import com.sedi.routelist.models.Language
+import com.sedi.routelist.models.PrefsManager
+import com.sedi.routelist.presenters.IAction
 
 class LanguageAdapter(
     private val context: Context,
     private val items: ArrayList<Language>,
-    private val clickCallback: ClickCallback
+    private val action: IAction
 ) : RecyclerView.Adapter<LanguageAdapter.LanguageHolder>() {
 
 
@@ -33,9 +37,6 @@ class LanguageAdapter(
 
     }
 
-    interface ClickCallback {
-        fun onClicked(language: String);
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LanguageHolder {
         return LanguageHolder(
@@ -64,17 +65,22 @@ class LanguageAdapter(
                 )
             )
         }
-
         holder.Describe?.setOnClickListener {
-            clickCallback.onClicked(items[position].languageTag)
+            saveLanguage(items[position].languageTag)
         }
         holder.Flag?.setOnClickListener {
-            clickCallback.onClicked(items[position].languageTag)
+            saveLanguage(items[position].languageTag)
         }
 
         holder.LL_Language?.setOnClickListener {
-            clickCallback.onClicked(items[position].languageTag)
+            saveLanguage(items[position].languageTag)
         }
+    }
+
+    private fun saveLanguage(lang: String) {
+        PrefsManager.getIntance(context)
+            .setValue(PrefsManager.PrefsKey.LOCALE, lang)
+        action.action()
     }
 
     override fun getItemCount(): Int {
