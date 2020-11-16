@@ -11,9 +11,7 @@ import java.util.*
 
 class MyApplication : Application() {
 
-
     private lateinit var noticeItemDatabase: NoticeItemDatabase
-
 
     override fun onCreate() {
         super.onCreate()

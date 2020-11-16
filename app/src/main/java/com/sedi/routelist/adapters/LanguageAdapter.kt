@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.LOG_LEVEL
@@ -22,14 +23,14 @@ class LanguageAdapter(
 ) : RecyclerView.Adapter<LanguageAdapter.LanguageHolder>() {
 
 
-    inner class LanguageHolder : RecyclerView.ViewHolder {
+    inner class LanguageHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         var Describe: TextView? = null
         var Flag: ImageView? = null
         var LL_Language: LinearLayout? = null
 
 
-        constructor(itemView: View) : super(itemView) {
+        init {
             Describe = itemView.findViewById(R.id.tv_flag_name)
             Flag = itemView.findViewById(R.id.iv_flag)
             LL_Language = itemView.findViewById(R.id.ll_language)
@@ -53,15 +54,16 @@ class LanguageAdapter(
         holder.Describe?.text = context.resources.getString(items[position].nameID)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             holder.Flag?.setImageDrawable(
-                context.resources.getDrawable(
+                ResourcesCompat.getDrawable(context.resources,
                     items[position].iconID,
                     context.theme
                 )
             )
         } else{
             holder.Flag?.setImageDrawable(
-                context.resources.getDrawable(
-                    items[position].iconID
+                ResourcesCompat.getDrawable(context.resources,
+                    items[position].iconID,
+                    context.theme
                 )
             )
         }

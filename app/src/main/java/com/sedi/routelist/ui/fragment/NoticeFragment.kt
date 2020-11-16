@@ -96,8 +96,8 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         binding.etDate.setOnTouchListener { _, event ->
             val action = event.action
             if (action == MotionEvent.ACTION_DOWN) {
-                var text = et_date.text.toString()
-                var date = text.split(".")
+                val text = et_date.text.toString()
+                val date = text.split(".")
                 if (context != null && date.size == 3)
                     DatePickerDialog(
                         requireContext(),
@@ -111,8 +111,8 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         }
         binding.etExitTime.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
-                var text = et_exit_time.text.toString()
-                var time = text.split(":")
+                val text = et_exit_time.text.toString()
+                val time = text.split(":")
                 if (context != null && time.size == 2)
                     startTimePickerDialog(time[0].toInt(), time[1].toInt())
                 editableView = v
@@ -121,8 +121,8 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         }
         binding.etResetingTime.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
-                var text = et_reseting_time.text.toString()
-                var time = text.split(":")
+                val text = et_reseting_time.text.toString()
+                val time = text.split(":")
                 if (context != null && time.size == 2)
                     startTimePickerDialog(time[0].toInt(), time[1].toInt())
                 editableView = v
