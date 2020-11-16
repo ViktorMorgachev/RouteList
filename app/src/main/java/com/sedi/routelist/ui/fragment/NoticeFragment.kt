@@ -36,7 +36,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
     private var notice: Notice? = null
 
     // Logic
-    private lateinit var pagerAdapter: NoticesPagerAdapter
+    private var pagerAdapter : NoticesPagerAdapter? = null
     private var position: Int? = null
     private var editableView: View? = null // Поле которое редактируется
 
@@ -133,8 +133,8 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
     override fun onResume() {
         super.onResume()
-        pagerAdapter.noticeFragmentHelper.currentNotice = notice!!
-        pagerAdapter.noticeFragmentHelper.currentPosition = position!!
+        pagerAdapter?.noticeFragmentHelper?.currentNotice = notice!!
+        pagerAdapter?.noticeFragmentHelper?.currentPosition = position!!
         notice?.dbKey = position!!
         log(LOG_LEVEL.INFO, "Current position: $position")
     }
