@@ -1,7 +1,9 @@
 package com.sedi.routelist.models
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.huawei.hms.maps.model.LatLng
 
 @Entity
 class NoticeRoomModel {
@@ -13,6 +15,7 @@ class NoticeRoomModel {
     var reason: String = ""
     var exitTime: String = ""
     var resetingTime: String = ""
-    var residenceAdress: Address = Address()
-    var destinationAdress: Address = Address()
+    var residenceAdress: String = ""
+    var destinationAdress: String = ""
 }
+

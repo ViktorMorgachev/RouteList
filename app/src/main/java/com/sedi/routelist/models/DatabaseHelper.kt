@@ -1,6 +1,7 @@
 package com.sedi.routelist.models
 
 import android.app.Activity
+import com.huawei.hms.maps.model.LatLng
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.asynkExecute
@@ -16,21 +17,26 @@ fun convertNoticeItemToRoomModel(notice: Notice) =
         reason = notice.reason
         exitTime = notice.exitTime
         resetingTime = notice.resetingTime
-        residenceAdress = notice.residenceAdress
-        destinationAdress = notice.destinationAdress
+        residenceAdress =
+            "${notice.residenceAdress.address}/${notice.residenceAdress.location?.latitude}/${notice.residenceAdress.location?.longitude}"
+        destinationAdress =
+            "${notice.destinationAdress.address}/${notice.destinationAdress.location?.latitude}/${notice.destinationAdress.location?.longitude}"
     }
 
-fun convertRoomModelToNotice(noticeRoomModel: NoticeRoomModel) = Notice(
-    dbKey = noticeRoomModel.primaryKey,
-    fio = noticeRoomModel.fio,
-    date = noticeRoomModel.date,
-    phoneNumber = noticeRoomModel.phoneNumber,
-    reason = noticeRoomModel.reason,
-    exitTime = noticeRoomModel.exitTime,
-    resetingTime = noticeRoomModel.resetingTime,
-    residenceAdress = noticeRoomModel.residenceAdress,
-    destinationAdress = noticeRoomModel.destinationAdress
-)
+fun convertRoomModelToNotice(noticeRoomModel: NoticeRoomModel): Notice {
+    val notice = Notice().apply {
+        dbKey = noticeRoomModel.primaryKey
+        fio = noticeRoomModel.fio
+        date = noticeRoomModel.date
+        phoneNumber = noticeRoomModel.phoneNumber
+        reason = noticeRoomModel.reason
+        exitTime = noticeRoomModel.exitTime
+        resetingTime = noticeRoomModel.resetingTime
+    }
+    addressTransformation(noticeRoomModel, notice)
+    return notice
+}
+
 
 fun asynkInsertNotice(
     noticeRoomModel: NoticeRoomModel,
@@ -65,7 +71,7 @@ fun asynkGetAllNotices(
             }
             activity.runOnUiThread { resultCallback.onSucces(notices = listOfNotices) }
         } catch (e: Exception) {
-            activity.runOnUiThread {  resultCallback.onError(e) }
+            activity.runOnUiThread { resultCallback.onError(e) }
 
         }
 

@@ -1,6 +1,8 @@
 package com.sedi.routelist.models
 
 import android.os.Parcelable
+import androidx.core.text.isDigitsOnly
+import androidx.room.TypeConverter
 import com.huawei.hms.maps.model.LatLng
 import com.sedi.routelist.commons.getCurrentDate
 import com.sedi.routelist.commons.getCurrentTime
@@ -20,4 +22,5 @@ data class Notice(
 ) : Parcelable
 
 @Parcelize
-data class Address(var address: String = "", val location: LatLng? = null) : Parcelable
+data class Address(var address: String = "", val location: LatLng = LatLng(0.0, 0.0)) : Parcelable
+
