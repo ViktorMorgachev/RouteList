@@ -15,10 +15,9 @@ import android.widget.TimePicker
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
-import com.sedi.routelist.commons.ExtraNames
-import com.sedi.routelist.commons.LOG_LEVEL
-import com.sedi.routelist.commons.log
+import com.sedi.routelist.commons.*
 import com.sedi.routelist.databinding.RouteListFragmentBinding
 import com.sedi.routelist.models.Notice
 import com.sedi.routelist.presenters.IClickListener
@@ -36,7 +35,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
     private var notice: Notice? = null
 
     // Logic
-    private var pagerAdapter : NoticesPagerAdapter? = null
+    private var pagerAdapter: NoticesPagerAdapter? = null
     private var position: Int? = null
     private var editableView: View? = null // Поле которое редактируется
 
@@ -67,6 +66,17 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initListeners() {
+
+        if (!MyApplication.hasNetwork) {
+            binding.btnRoute.invisible()
+        } else {
+            binding.btnRoute.visible()
+        }
+
+        binding.btnRoute.setOnClickListener {
+            //
+        }
+
         binding.btnSave.setOnClickListener {
             if (notice != null && position != null) {
                 initNotice()
@@ -87,11 +97,20 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
         }
 
-        binding.etDestinationAdress.addTextChangedListener(textWatcher)
+
+        // TODO Если есть интернет то даём возможность ввести адрес с обратным геокодингом
+        // иначе просто вводим только ручками и у нас отсутствует возможность работы с картой
+        // иначе используем при вводе обратный геокодинг, и уже на карте отображаем адреса
+        // с последующим построением маршрута в зависимости что выбрал пользователь
+        if (MyApplication.hasNetwork) {
+            binding.etDestinationAdress.addTextChangedListener(textWatcher)
+            binding.etResidenceAdress.addTextChangedListener(textWatcher)
+        } else {
+
+        }
         binding.etFio.addTextChangedListener(textWatcher)
         binding.etPhone.addTextChangedListener(textWatcher)
         binding.etReason.addTextChangedListener(textWatcher)
-        binding.etResidenceAdress.addTextChangedListener(textWatcher)
 
         binding.etDate.setOnTouchListener { _, event ->
             val action = event.action
@@ -142,12 +161,12 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
     private fun initNotice() {
         notice?.fio = et_fio.text.toString()
         notice?.date = et_date.text.toString()
-        notice?.destinationAdress = et_destination_adress.text.toString()
+        notice?.destinationAdress?.address = et_destination_adress.text.toString()
+        notice?.residenceAdress?.address = et_residence_adress.text.toString()
         notice?.exitTime = et_exit_time.text.toString()
         notice?.reason = et_reason.text.toString()
         notice?.resetingTime = et_reseting_time.text.toString()
         notice?.phoneNumber = et_phone.text.toString()
-        notice?.residenceAdress = et_residence_adress.text.toString()
     }
 
 

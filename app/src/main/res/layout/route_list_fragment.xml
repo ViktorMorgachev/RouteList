@@ -142,7 +142,7 @@
                 android:hint="@string/residence_adress"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text="@{routeNotice.residenceAdress}" />
+                android:text="@{routeNotice.residenceAdress.address}" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -159,7 +159,7 @@
                 android:hint="@string/destination_adress2"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text="@{routeNotice.destinationAdress}" />
+                android:text="@{routeNotice.destinationAdress.address}" />
 
             <View
                 android:layout_width="match_parent"
@@ -173,6 +173,17 @@
                 android:layout_marginBottom="40dp"
                 android:background="@android:color/holo_blue_dark"
                 android:text="@string/save"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_route"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                android:background="@android:color/holo_blue_dark"
+                android:text="@string/build_road"
                 android:textColor="@android:color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />

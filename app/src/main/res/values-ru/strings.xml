@@ -21,5 +21,6 @@
     <string name="paste">Вставить</string>
     <string name="change_locale">Сменить язык</string>
     <string name="select_language">Выбрать язык</string>
+    <string name="build_road">Маршрут</string>
 
 </resources>

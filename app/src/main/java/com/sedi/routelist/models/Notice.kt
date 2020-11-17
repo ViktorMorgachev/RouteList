@@ -1,6 +1,7 @@
 package com.sedi.routelist.models
 
 import android.os.Parcelable
+import com.huawei.hms.maps.model.LatLng
 import com.sedi.routelist.commons.getCurrentDate
 import com.sedi.routelist.commons.getCurrentTime
 import kotlinx.android.parcel.Parcelize
@@ -14,6 +15,9 @@ data class Notice(
     var reason: String = "",
     var exitTime: String = getCurrentTime(),
     var resetingTime: String = getCurrentTime(),
-    var residenceAdress: String = "",
-    var destinationAdress: String = ""
+    var residenceAdress: Address = Address(),
+    var destinationAdress: Address = Address()
 ) : Parcelable
+
+@Parcelize
+data class Address(var address: String = "", val location: LatLng? = null) : Parcelable

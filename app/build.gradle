@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.sedi.routelist"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 30
         versionCode 1
         versionName "1.1.2"
@@ -60,10 +60,6 @@ dependencies {
     // Preference
     // https://mvnrepository.com/artifact/androidx.preference/preference
     implementation 'androidx.preference:preference:1.1.1'
-
-
-    // Glide
-    def work_version = "1.0.1"
 
     // (Java only)
     implementation 'androidx.work:work-runtime:2.0.1'

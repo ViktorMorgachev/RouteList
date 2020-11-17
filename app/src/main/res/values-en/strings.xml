@@ -21,4 +21,5 @@
     <string name="change_locale">Change locale</string>
     <string name="select_language">Select language</string>
     <string name="sucess_saved">Saved successfully</string>
+    <string name="build_road">Route</string>
 </resources>

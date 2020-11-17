@@ -43,9 +43,9 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             MyApplication.instance.initDB(this)
         }
 
+
         // Если первый запуск
-        if (PrefsManager.getIntance(applicationContext)
-                .getValue(PrefsManager.PrefsKey.FIRST_START, true) as Boolean
+        if (PrefsManager.getIntance(applicationContext).getValue(PrefsManager.PrefsKey.FIRST_START, true)
         ) {
             showLanguageChooseDialog(object : IAction {
                 override fun action() {
@@ -82,8 +82,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             val res = resources
             val dm = res.displayMetrics
             val conf = res.configuration
-            val localeCode: String =
-                PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, "ru") as String
+            val localeCode = PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, "ru")
             log(LOG_LEVEL.INFO, "LocaleCode: $localeCode")
             conf.locale = Locale(localeCode)
             res.updateConfiguration(conf, dm)

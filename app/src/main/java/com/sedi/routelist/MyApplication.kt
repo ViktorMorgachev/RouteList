@@ -16,12 +16,16 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        // TODO Проверяем наличие сети и в зависимости от этого меняем поле
+        // Желательно тут установить слушатель
 
     }
 
     companion object {
+        public val hasNetwork = false
         lateinit var instance: MyApplication
             private set
+
     }
 
     fun initDB(activity: Activity) {

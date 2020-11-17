@@ -13,6 +13,6 @@ class NoticeRoomModel {
     var reason: String = ""
     var exitTime: String = ""
     var resetingTime: String = ""
-    var residenceAdress: String = ""
-    var destinationAdress: String = ""
+    var residenceAdress: Address = Address()
+    var destinationAdress: Address = Address()
 }
