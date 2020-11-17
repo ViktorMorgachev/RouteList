@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import com.huawei.hms.maps.model.LatLng
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.LOG_LEVEL
@@ -163,6 +164,11 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
                 pagerAdapter.count + 1
             )
         )
+    }
+
+    fun showMapByAddresses(adressFrom: LatLng, adressTo: LatLng){
+        // Тут показать на чём будете передвигаться
+             //  Велосипед, Машина, Пешком
     }
 
     fun deleteNotice(item: MenuItem?) {
