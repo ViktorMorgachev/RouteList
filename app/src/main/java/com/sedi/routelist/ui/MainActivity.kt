@@ -240,7 +240,6 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
     }
 
     private fun updateUI(hasNetwork: Boolean) {
-        log(LOG_LEVEL.INFO, "Has network: $hasNetwork")
     }
 
 
