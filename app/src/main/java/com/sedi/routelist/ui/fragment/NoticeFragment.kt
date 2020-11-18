@@ -1,24 +1,28 @@
 package com.sedi.routelist.ui.fragment
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TimePicker
-import androidx.core.widget.addTextChangedListener
+import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.*
 import com.sedi.routelist.databinding.RouteListFragmentBinding
+import com.sedi.routelist.models.Address
 import com.sedi.routelist.models.Notice
 import com.sedi.routelist.presenters.IClickListener
 import com.sedi.routelist.ui.MainActivity
@@ -27,12 +31,14 @@ import kotlinx.android.synthetic.main.route_list_fragment.*
 
 
 class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
-    DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+    DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener,
+    MainActivity.UpdateUIListener {
 
     //Data
     lateinit var binding: RouteListFragmentBinding
     lateinit var clickListener: IClickListener
     private var notice: Notice? = null
+    private var fragmentListenerCallback : FragmentListenerCallback? = null
 
     // Logic
     private var pagerAdapter: NoticesPagerAdapter? = null
@@ -66,9 +72,8 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initListeners() {
-
         binding.btnRoute.setOnClickListener {
-
+            fragmentListenerCallback?.showMapActivity(null, null)
         }
 
         binding.btnSave.setOnClickListener {
@@ -191,8 +196,8 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
             saveClickListener: IClickListener,
             noticesPagerAdapter: NoticesPagerAdapter,
             position: Int
-        ) =
-            NoticeFragment().apply {
+        ): NoticeFragment {
+            return NoticeFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(
                         ExtraNames.KeysField.KEY_EXTRA_NOTICE,
@@ -201,6 +206,8 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
                 }
                 configurateFragment(saveClickListener, noticesPagerAdapter, position)
             }
+        }
+
     }
 
     override fun pastNotice(notice: Notice) {
@@ -262,5 +269,25 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         }
     }
 
+    override fun updateUI(hasNetwork: Boolean) {
+        if (hasNetwork) {
+            btn_route.visible(500)
+        } else {
+            ViewCompat.animate(btn_route).setDuration(500).alpha(1f).alphaBy(0.0f).withEndAction {
+                btn_route.alpha = 0.0f
+                btn_route.gone()
+            }.start()
+        }
+    }
 
+    override fun onAttach(activity: Activity) {
+        super.onAttach(activity)
+        if (activity is FragmentListenerCallback){
+            fragmentListenerCallback = activity
+        }
+    }
+}
+
+interface FragmentListenerCallback{
+    fun showMapActivity(addressFrom: Address?, addressTo: Address?)
 }

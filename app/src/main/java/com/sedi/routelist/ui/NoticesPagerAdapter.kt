@@ -31,6 +31,12 @@ class NoticesPagerAdapter(fm: FragmentManager, behavior: Int) :
         notifyDataSetChanged()
     }
 
+    fun updateFragments(hasNetwork: Boolean) {
+        mFragmentList.forEach {
+            (it as MainActivity.UpdateUIListener).updateUI(hasNetwork)
+        }
+    }
+
 
     class NoticeFragmentHelper() {
         var currentPosition: Int = 0;

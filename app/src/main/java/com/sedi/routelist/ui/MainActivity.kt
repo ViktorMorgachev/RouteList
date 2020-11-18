@@ -1,6 +1,5 @@
 package com.sedi.routelist.ui
 
-import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -11,33 +10,33 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
+import com.google.android.gms.dynamic.IFragmentWrapper
 import com.google.android.material.tabs.TabLayout
 import com.huawei.hms.maps.model.LatLng
-import com.huawei.hms.support.log.LogLevel
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.backgrounds.ConnectivityInformation
 import com.sedi.routelist.backgrounds.ConnectivityListener
 import com.sedi.routelist.backgrounds.OnConnectivityInformationChangedListener
-import com.sedi.routelist.commons.LOG_LEVEL
-import com.sedi.routelist.commons.log
-import com.sedi.routelist.commons.showToast
+import com.sedi.routelist.commons.*
 import com.sedi.routelist.models.*
 import com.sedi.routelist.presenters.IAction
 import com.sedi.routelist.presenters.IClickListener
 import com.sedi.routelist.presenters.IResultCalback
 import com.sedi.routelist.ui.dialogfragment.ChooseLanguageDialog
+import com.sedi.routelist.ui.fragment.FragmentListenerCallback
 import com.sedi.routelist.ui.fragment.NoticeFragment
 import java.util.*
 
 
 class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IResultCalback,
-    OnConnectivityInformationChangedListener {
+    OnConnectivityInformationChangedListener, FragmentListenerCallback {
 
-    private lateinit var viewPager: ViewPager
-    private lateinit var tabLayout: TabLayout
-    private lateinit var pagerAdapter: NoticesPagerAdapter
-    private lateinit var connectivityListener: ConnectivityListener
+    private var viewPager: ViewPager? = null
+    private var tabLayout: TabLayout? = null
+    private var pagerAdapter: NoticesPagerAdapter? = null
+    private var connectivityListener: ConnectivityListener? = null
+    private var updateUIListener: UpdateUIListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +50,8 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
 
         connectivityListener = ConnectivityListener(this)
-        connectivityListener.register()
-        connectivityListener.setListener(this)
+        connectivityListener?.register()
+        connectivityListener?.setListener(this)
 
 
         // Если первый запуск
@@ -63,12 +62,12 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
                 override fun action() {
                     updateLocale()
                     initNotices()
-                    viewPager.visibility = View.VISIBLE
+                    viewPager?.visibility = View.VISIBLE
                     refreshActivity()
                 }
 
             })
-            viewPager.visibility = View.GONE
+            viewPager?.visibility = View.GONE
             PrefsManager.getIntance(applicationContext)
                 .setValue(PrefsManager.PrefsKey.FIRST_START, false)
         } else {
@@ -76,13 +75,13 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         }
 
         tabLayout = findViewById(R.id.tab_layout)
-        tabLayout.setupWithViewPager(viewPager, true)
+        tabLayout?.setupWithViewPager(viewPager, true)
 
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        connectivityListener.unregister()
+        connectivityListener?.unregister()
     }
 
     fun showLanguageChooseDialog(action: IAction) {
@@ -122,26 +121,26 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
         )
         if (notices.isEmpty()) {
-            pagerAdapter.addFragment(
+            pagerAdapter?.addFragment(
                 NoticeFragment.instance(
                     Notice(dbKey = 1),
                     this,
-                    pagerAdapter,
+                    pagerAdapter!!,
                     1
                 )
             )
         } else
             notices.forEachIndexed { index, notice ->
-                pagerAdapter.addFragment(
+                pagerAdapter?.addFragment(
                     NoticeFragment.instance(
                         notice,
                         this,
-                        pagerAdapter,
+                        pagerAdapter!!,
                         index + 1
                     )
                 )
             }
-        viewPager.adapter = pagerAdapter
+        viewPager?.adapter = pagerAdapter
     }
 
     override fun onSave(notice: Notice, position: Int) {
@@ -169,25 +168,22 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
     }
 
     fun addNotice(item: MenuItem?) {
-        pagerAdapter.addFragment(
+        pagerAdapter?.addFragment(
             NoticeFragment.instance(
                 Notice(),
                 this,
-                pagerAdapter,
-                pagerAdapter.count + 1
+                pagerAdapter!!,
+                pagerAdapter!!.count + 1
             )
         )
     }
 
-    fun showMapByAddresses(adressFrom: LatLng, adressTo: LatLng) {
-        // Тут показать на чём будете передвигаться
-        //  Велосипед, Машина, Пешком
-    }
 
     fun deleteNotice(item: MenuItem?) {
 
+        if (pagerAdapter == null) return
         //Временный костыль
-        if (pagerAdapter.count == 1) {
+        if (pagerAdapter?.count == 1) {
             showToast(
                 this,
                 MyApplication.instance.resources.getString(R.string.minimum_must_have_list)
@@ -195,22 +191,25 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             return
         }
         // Remove current list and delete current Notice from DB
-        pagerAdapter.noticeFragmentHelper.noticeForCopy = null
-        pagerAdapter.removeFragment(pagerAdapter.getItem(pagerAdapter.noticeFragmentHelper.currentPosition - 1))
+        pagerAdapter?.noticeFragmentHelper?.noticeForCopy = null
+        pagerAdapter?.removeFragment(pagerAdapter!!.getItem(pagerAdapter!!.noticeFragmentHelper.currentPosition - 1))
         asynkDeleteNotice(
             this,
             MyApplication.instance.getDB(),
-            convertNoticeItemToRoomModel(pagerAdapter.noticeFragmentHelper.currentNotice)
+            convertNoticeItemToRoomModel(pagerAdapter!!.noticeFragmentHelper.currentNotice)
         )
     }
 
     fun copyNotice(item: MenuItem?) {
-        pagerAdapter.noticeFragmentHelper.noticeForCopy =
-            pagerAdapter.noticeFragmentHelper.currentNotice
+        pagerAdapter?.noticeFragmentHelper?.noticeForCopy =
+            pagerAdapter?.noticeFragmentHelper?.currentNotice
     }
 
     fun pasteNotice(item: MenuItem?) {
-        if (pagerAdapter.noticeFragmentHelper.noticeForCopy == null) {
+
+        if (pagerAdapter == null) return
+
+        if (pagerAdapter?.noticeFragmentHelper?.noticeForCopy == null) {
             showToast(
                 this,
                 MyApplication.instance.resources.getString(R.string.copy_before_paste),
@@ -219,9 +218,10 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             return
         }
         try {
-            (pagerAdapter.getItem(pagerAdapter.noticeFragmentHelper.currentPosition - 1) as PastNoticeCallback).pastNotice(
-                pagerAdapter.noticeFragmentHelper.noticeForCopy!!
-            )
+            (pagerAdapter?.getItem(pagerAdapter!!.noticeFragmentHelper.currentPosition - 1) as PastNoticeCallback)
+                .pastNotice(
+                    pagerAdapter!!.noticeFragmentHelper.noticeForCopy!!
+                )
         } catch (e: ClassCastException) {
             onError(e)
         } catch (e: Exception) {
@@ -240,6 +240,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
     }
 
     private fun updateUI(hasNetwork: Boolean) {
+        pagerAdapter?.updateFragments(hasNetwork)
     }
 
 
@@ -272,5 +273,14 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
     }
 
+
+    interface UpdateUIListener {
+        fun updateUI(hasNetwork: Boolean)
+    }
+
+    override fun showMapActivity(addressFrom: Address?, addressTo: Address?) {
+        MapActivity.init(addressFrom, addressTo)
+        startActivity(Intent(this, MapActivity::class.java))
+    }
 
 }
