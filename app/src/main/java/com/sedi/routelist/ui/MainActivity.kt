@@ -13,8 +13,12 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.huawei.hms.maps.model.LatLng
+import com.huawei.hms.support.log.LogLevel
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
+import com.sedi.routelist.backgrounds.ConnectivityInformation
+import com.sedi.routelist.backgrounds.ConnectivityListener
+import com.sedi.routelist.backgrounds.OnConnectivityInformationChangedListener
 import com.sedi.routelist.commons.LOG_LEVEL
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.commons.showToast
@@ -27,11 +31,13 @@ import com.sedi.routelist.ui.fragment.NoticeFragment
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IResultCalback {
+class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IResultCalback,
+    OnConnectivityInformationChangedListener {
 
     private lateinit var viewPager: ViewPager
     private lateinit var tabLayout: TabLayout
     private lateinit var pagerAdapter: NoticesPagerAdapter
+    private lateinit var connectivityListener: ConnectivityListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +50,14 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         }
 
 
+        connectivityListener = ConnectivityListener(this)
+        connectivityListener.register()
+        connectivityListener.setListener(this)
+
+
         // Если первый запуск
-        if (PrefsManager.getIntance(applicationContext).getValue(PrefsManager.PrefsKey.FIRST_START, true)
+        if (PrefsManager.getIntance(applicationContext)
+                .getValue(PrefsManager.PrefsKey.FIRST_START, true)
         ) {
             showLanguageChooseDialog(object : IAction {
                 override fun action() {
@@ -63,13 +75,14 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             initNotices()
         }
 
-
-
-
         tabLayout = findViewById(R.id.tab_layout)
         tabLayout.setupWithViewPager(viewPager, true)
 
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        connectivityListener.unregister()
     }
 
     fun showLanguageChooseDialog(action: IAction) {
@@ -82,7 +95,8 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             val res = resources
             val dm = res.displayMetrics
             val conf = res.configuration
-            val localeCode = PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, "ru")
+            val localeCode =
+                PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, "ru")
             log(LOG_LEVEL.INFO, "LocaleCode: $localeCode")
             conf.locale = Locale(localeCode)
             res.updateConfiguration(conf, dm)
@@ -165,9 +179,9 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         )
     }
 
-    fun showMapByAddresses(adressFrom: LatLng, adressTo: LatLng){
+    fun showMapByAddresses(adressFrom: LatLng, adressTo: LatLng) {
         // Тут показать на чём будете передвигаться
-             //  Велосипед, Машина, Пешком
+        //  Велосипед, Машина, Пешком
     }
 
     fun deleteNotice(item: MenuItem?) {
@@ -225,6 +239,10 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         })
     }
 
+    private fun updateUI(hasNetwork: Boolean) {
+        log(LOG_LEVEL.INFO, "Has network: $hasNetwork")
+    }
+
 
     interface PastNoticeCallback {
         fun pastNotice(notice: Notice)
@@ -236,6 +254,23 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         )
         finish()
         startActivity(refresh)
+    }
+
+    override fun onConnectivityInformationChanged(connectivityInformation: ConnectivityInformation) {
+        log(
+            LOG_LEVEL.INFO,
+            "ConnectivityInformation ${connectivityInformation.name} IsConnected: ${connectivityInformation.isConnected}"
+        )
+        runOnUiThread {
+            when (connectivityInformation) {
+                ConnectivityInformation.CONNECTED -> updateUI(true)
+                ConnectivityInformation.WIFI -> updateUI(true)
+                ConnectivityInformation.OTHER -> updateUI(true)
+                ConnectivityInformation.DISCONNECTED -> updateUI(false)
+                else -> updateUI(false)
+            }
+        }
+
     }
 
 

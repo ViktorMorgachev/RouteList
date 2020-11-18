@@ -67,14 +67,8 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
     @SuppressLint("ClickableViewAccessibility")
     private fun initListeners() {
 
-        if (!MyApplication.hasNetwork) {
-            binding.btnRoute.invisible()
-        } else {
-            binding.btnRoute.visible()
-        }
-
         binding.btnRoute.setOnClickListener {
-            //
+
         }
 
         binding.btnSave.setOnClickListener {
@@ -97,17 +91,6 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
         }
 
-
-        // TODO Если есть интернет то даём возможность ввести адрес с обратным геокодингом
-        // иначе просто вводим только ручками и у нас отсутствует возможность работы с картой
-        // иначе используем при вводе обратный геокодинг, и уже на карте отображаем адреса
-        // с последующим построением маршрута в зависимости что выбрал пользователь
-        if (MyApplication.hasNetwork) {
-            binding.etDestinationAdress.addTextChangedListener(textWatcher)
-            binding.etResidenceAdress.addTextChangedListener(textWatcher)
-        } else {
-
-        }
         binding.etFio.addTextChangedListener(textWatcher)
         binding.etPhone.addTextChangedListener(textWatcher)
         binding.etReason.addTextChangedListener(textWatcher)

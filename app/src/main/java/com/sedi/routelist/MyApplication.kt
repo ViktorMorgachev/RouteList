@@ -2,7 +2,12 @@ package com.sedi.routelist
 
 import android.app.Activity
 import android.app.Application
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.AsyncTask
+import android.os.Build
+import com.huawei.hms.support.log.LogLevel
+import com.sedi.routelist.backgrounds.ConnectivityListener
 import com.sedi.routelist.commons.LOG_LEVEL
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.models.NoticeItemDatabase
@@ -16,13 +21,9 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        // TODO Проверяем наличие сети и в зависимости от этого меняем поле
-        // Желательно тут установить слушатель
-
     }
 
     companion object {
-        public val hasNetwork = false
         lateinit var instance: MyApplication
             private set
 
