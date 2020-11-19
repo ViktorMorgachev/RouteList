@@ -6,6 +6,7 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.AsyncTask
 import android.os.Build
+import com.huawei.hms.maps.MapsInitializer
 import com.huawei.hms.support.log.LogLevel
 import com.sedi.routelist.backgrounds.ConnectivityListener
 import com.sedi.routelist.commons.LOG_LEVEL
@@ -21,6 +22,8 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        // Set the API key.
+        MapsInitializer.setApiKey("CgB6e3x9u6Xmi/Y6ykebG2lYedCpeyc1sOgxO0kSOqjiuwYLiJAuxB/XqKOsuCSL7hngyxBGWWGw1rafWzIEmUaU")
     }
 
     companion object {

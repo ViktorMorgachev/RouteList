@@ -28,7 +28,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.MapActivity" />
-
+        <meta-data
+            android:name="com.huawei.hms.client.channel.androidMarket"
+            android:value="false" />
     </application>
 
 

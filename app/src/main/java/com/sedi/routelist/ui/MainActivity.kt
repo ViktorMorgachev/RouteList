@@ -1,12 +1,16 @@
 package com.sedi.routelist.ui
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
@@ -257,10 +261,6 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
     }
 
     override fun onConnectivityInformationChanged(connectivityInformation: ConnectivityInformation) {
-        log(
-            LOG_LEVEL.INFO,
-            "ConnectivityInformation ${connectivityInformation.name} IsConnected: ${connectivityInformation.isConnected}"
-        )
         runOnUiThread {
             when (connectivityInformation) {
                 ConnectivityInformation.CONNECTED -> updateUI(true)
@@ -278,9 +278,27 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         fun updateUI(hasNetwork: Boolean)
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     override fun showMapActivity(addressFrom: Address?, addressTo: Address?) {
+        if (checkPermissions(this, getLocationPermissions()))  {
+            ActivityCompat.requestPermissions(this, getLocationPermissions(), 2)
+            return
+
+        }
+        if (checkPermissions(this, getInternetPermissions()))  {
+            ActivityCompat.requestPermissions(this, getInternetPermissions(), 1)
+            return
+        }
         MapActivity.init(addressFrom, addressTo)
         startActivity(Intent(this, MapActivity::class.java))
+
     }
 
 }

@@ -1,18 +1,18 @@
 package com.sedi.routelist.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.huawei.hms.maps.HuaweiMap
 import com.huawei.hms.maps.MapsInitializer
 import com.huawei.hms.maps.OnMapReadyCallback
 import com.sedi.routelist.R
-import com.sedi.routelist.commons.ExtraNames
 import com.sedi.routelist.commons.LOG_LEVEL
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.models.Address
-import com.sedi.routelist.models.Notice
-import com.sedi.routelist.presenters.IClickListener
-import com.sedi.routelist.ui.fragment.NoticeFragment
 import kotlinx.android.synthetic.main.huawei_map_layout.*
 
 
@@ -28,13 +28,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
         }
-        // please replace "Your API key" with api_key field value in
-        // agconnect-services.json
         MapsInitializer.setApiKey("CgB6e3x9u6Xmi/Y6ykebG2lYedCpeyc1sOgxO0kSOqjiuwYLiJAuxB/XqKOsuCSL7hngyxBGWWGw1rafWzIEmUaU")
         mapView.onCreate(mapViewBundle)
         //get map instance
         mapView.getMapAsync(this)
     }
+
 
 
     override fun onMapReady(map: HuaweiMap) {
@@ -73,7 +72,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     companion object {
         private var addresFrom: Address? = null
         private var addresTo: Address? = null
-        private val instance = MapActivity()
         private const val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
         fun init(
             addressFirst: Address?,
