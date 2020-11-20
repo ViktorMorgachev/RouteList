@@ -38,7 +38,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
     lateinit var binding: RouteListFragmentBinding
     lateinit var clickListener: IClickListener
     private var notice: Notice? = null
-    private var fragmentListenerCallback : FragmentListenerCallback? = null
+    private var fragmentListenerCallback: FragmentListenerCallback? = null
 
     // Logic
     private var pagerAdapter: NoticesPagerAdapter? = null
@@ -81,6 +81,10 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
                 initNotice()
                 clickListener.onSave(notice!!, position!!)
             }
+        }
+
+        if (checkNetworkConnectivity(requireActivity())) {
+            binding.btnRoute.visible()
         }
 
         val textWatcher = object : TextWatcher {
@@ -139,7 +143,6 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
     }
 
 
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -153,7 +156,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         pagerAdapter?.noticeFragmentHelper?.currentNotice = notice!!
         pagerAdapter?.noticeFragmentHelper?.currentPosition = position!!
         notice?.dbKey = position!!
-        log(LOG_LEVEL.INFO, "Current position: $position")
+        log("Current position: $position")
     }
 
     private fun initNotice() {
@@ -225,7 +228,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
             this.notice = notice
             binding.routeNotice = notice
         } catch (e: Exception) {
-            e.message?.let { log(LOG_LEVEL.ERROR, it) }
+            log(e)
         }
 
     }
@@ -247,7 +250,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
             binding.etDate.setText(binding.routeNotice?.date)
             initNotice()
         } catch (e: Exception) {
-            e.message?.let { log(LOG_LEVEL.ERROR, it) }
+            log(e)
         }
 
 
@@ -275,7 +278,7 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
             }
             initNotice()
         } catch (e: Exception) {
-            e.message?.let { log(LOG_LEVEL.ERROR, it) }
+            log(e)
         }
     }
 
@@ -292,12 +295,12 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
-        if (activity is FragmentListenerCallback){
+        if (activity is FragmentListenerCallback) {
             fragmentListenerCallback = activity
         }
     }
 }
 
-interface FragmentListenerCallback{
+interface FragmentListenerCallback {
     fun showMapActivity(addressFrom: Address?, addressTo: Address?)
 }

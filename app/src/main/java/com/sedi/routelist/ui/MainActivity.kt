@@ -1,9 +1,6 @@
 package com.sedi.routelist.ui
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -14,9 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
-import com.google.android.gms.dynamic.IFragmentWrapper
 import com.google.android.material.tabs.TabLayout
-import com.huawei.hms.maps.model.LatLng
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.backgrounds.ConnectivityInformation
@@ -40,7 +35,6 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
     private var tabLayout: TabLayout? = null
     private var pagerAdapter: NoticesPagerAdapter? = null
     private var connectivityListener: ConnectivityListener? = null
-    private var updateUIListener: UpdateUIListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +77,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
     }
 
+
     override fun onDestroy() {
         super.onDestroy()
         connectivityListener?.unregister()
@@ -100,7 +95,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             val conf = res.configuration
             val localeCode =
                 PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, "ru")
-            log(LOG_LEVEL.INFO, "LocaleCode: $localeCode")
+            log("LocaleCode: $localeCode")
             conf.locale = Locale(localeCode)
             res.updateConfiguration(conf, dm)
         } catch (e: java.lang.Exception) {
@@ -148,7 +143,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
     }
 
     override fun onSave(notice: Notice, position: Int) {
-        log(LOG_LEVEL.INFO, "SaveNotice: $position")
+        log("SaveNotice: $position")
         asynkInsertNotice(
             convertNoticeItemToRoomModel(notice),
             this,
@@ -287,18 +282,8 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
     }
 
     override fun showMapActivity(addressFrom: Address?, addressTo: Address?) {
-        if (checkPermissions(this, getLocationPermissions()))  {
-            ActivityCompat.requestPermissions(this, getLocationPermissions(), 2)
-            return
-
-        }
-        if (checkPermissions(this, getInternetPermissions()))  {
-            ActivityCompat.requestPermissions(this, getInternetPermissions(), 1)
-            return
-        }
         MapActivity.init(addressFrom, addressTo)
         startActivity(Intent(this, MapActivity::class.java))
-
     }
 
 }

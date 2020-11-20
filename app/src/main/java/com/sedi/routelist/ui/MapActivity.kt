@@ -1,16 +1,11 @@
 package com.sedi.routelist.ui
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.huawei.hms.maps.HuaweiMap
 import com.huawei.hms.maps.MapsInitializer
 import com.huawei.hms.maps.OnMapReadyCallback
 import com.sedi.routelist.R
-import com.sedi.routelist.commons.LOG_LEVEL
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.models.Address
 import kotlinx.android.synthetic.main.huawei_map_layout.*
@@ -28,20 +23,29 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
         }
-        MapsInitializer.setApiKey("CgB6e3x9u6Xmi/Y6ykebG2lYedCpeyc1sOgxO0kSOqjiuwYLiJAuxB/XqKOsuCSL7hngyxBGWWGw1rafWzIEmUaU")
+        MapsInitializer.setApiKey(resources.getString(R.string.api_key))
         mapView.onCreate(mapViewBundle)
         //get map instance
         mapView.getMapAsync(this)
     }
 
 
-
     override fun onMapReady(map: HuaweiMap) {
         //get map instance in a callback method
-        log(LOG_LEVEL.INFO, "onMapReady")
+        log("onMapReady")
         hMap = map
         hMap!!.isMyLocationEnabled = true
         hMap!!.uiSettings.isMyLocationButtonEnabled = true
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        var mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY)
+        if (mapViewBundle == null) {
+            mapViewBundle = Bundle()
+            outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle)
+        }
+        mapView.onSaveInstanceState(mapViewBundle)
     }
 
     override fun onStart() {

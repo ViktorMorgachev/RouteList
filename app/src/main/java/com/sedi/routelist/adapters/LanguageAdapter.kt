@@ -10,8 +10,6 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.sedi.routelist.R
-import com.sedi.routelist.commons.LOG_LEVEL
-import com.sedi.routelist.commons.log
 import com.sedi.routelist.models.Language
 import com.sedi.routelist.models.PrefsManager
 import com.sedi.routelist.presenters.IAction

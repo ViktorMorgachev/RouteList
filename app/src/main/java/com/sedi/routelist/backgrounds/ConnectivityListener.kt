@@ -60,7 +60,7 @@ open class ConnectivityListener(private val context: Context) {
         } else {
             registerBroadcastReceiverUnderLolipop()
         }
-        log(LOG_LEVEL.INFO, "Successfully registered")
+        log("Successfully registered")
     }
 
     fun unregister() {
@@ -69,7 +69,7 @@ open class ConnectivityListener(private val context: Context) {
         } else {
             unregisterBroadcastReceiverUnderLolipop()
         }
-        log(LOG_LEVEL.INFO, "Successfully unregistered")
+        log("Successfully unregistered")
         this.onConnectivityInformationChangedListener = null
     }
 

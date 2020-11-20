@@ -7,10 +7,6 @@ import android.net.ConnectivityManager
 import android.os.AsyncTask
 import android.os.Build
 import com.huawei.hms.maps.MapsInitializer
-import com.huawei.hms.support.log.LogLevel
-import com.sedi.routelist.backgrounds.ConnectivityListener
-import com.sedi.routelist.commons.LOG_LEVEL
-import com.sedi.routelist.commons.log
 import com.sedi.routelist.models.NoticeItemDatabase
 import com.sedi.routelist.models.PrefsManager
 import java.util.*

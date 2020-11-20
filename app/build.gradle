@@ -20,8 +20,21 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+
+    signingConfigs {
+        config {
+            storeFile file('C:\\WorkFolder\\SeDi\\Keys\\MyKeys.jks')
+            storePassword 'ILIKEWRITECODE96'
+            keyPassword 'RouteListPro'
+            keyAlias 'RouteList'
+        }
+    }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.config
+        }
         release {
+            signingConfig signingConfigs.config
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
