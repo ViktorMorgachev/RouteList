@@ -77,7 +77,11 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         }
 
         binding.ivShowOnMapDestination.setOnClickListener {
+            fragmentListenerCallback?.addessFromMap()
+        }
 
+        binding.ivShowOnMapResidence.setOnClickListener {
+            fragmentListenerCallback?.addessFromMap()
         }
 
         binding.btnSave.setOnClickListener {

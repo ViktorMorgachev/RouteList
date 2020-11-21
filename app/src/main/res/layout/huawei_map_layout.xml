@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_map_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.huawei.hms.maps.MapView
-        android:id="@+id/mapView"
+    <FrameLayout
+
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        map:cameraTargetLat="51"
-        map:cameraTargetLng="10"
-        map:cameraZoom="8.5"
-        map:mapType="normal"
-        map:uiCompass="true"
-        map:uiZoomControls="true" />
+        android:layout_height="match_parent">
+
+        <com.huawei.hms.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            map:cameraTargetLat="51"
+            map:cameraTargetLng="10"
+            map:cameraZoom="7"
+            map:mapType="normal"
+            map:uiCompass="true"
+            map:uiZoomControls="true" />
+
+        <include
+            android:id="@+id/panel_map_center"
+            layout="@layout/item_center_map" />
+
+    </FrameLayout>
+
 </LinearLayout>
