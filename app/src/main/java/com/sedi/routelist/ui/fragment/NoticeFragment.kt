@@ -90,6 +90,9 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         if (checkNetworkConnectivity(requireActivity())) {
             binding.ivShowOnMapDestination.visible()
             binding.ivShowOnMapResidence.visible()
+        } else {
+            binding.ivShowOnMapDestination.gone()
+            binding.ivShowOnMapResidence.gone()
         }
 
         val textWatcher = object : TextWatcher {
