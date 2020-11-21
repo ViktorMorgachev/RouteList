@@ -30,4 +30,6 @@
     <string name="ru" translatable="false">Русский</string>
     <string name="de" translatable="false">Germany</string>
 
+    <string name="input_adress">Input address</string>
+
 </resources>

@@ -76,6 +76,10 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
             fragmentListenerCallback?.showMapActivity(null, null)
         }
 
+        binding.ivShowOnMapDestination.setOnClickListener {
+
+        }
+
         binding.btnSave.setOnClickListener {
             if (notice != null && position != null) {
                 initNotice()
@@ -84,7 +88,8 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         }
 
         if (checkNetworkConnectivity(requireActivity())) {
-            binding.btnRoute.visible()
+            binding.ivShowOnMapDestination.visible()
+            binding.ivShowOnMapResidence.visible()
         }
 
         val textWatcher = object : TextWatcher {
@@ -284,11 +289,16 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
     override fun updateUI(hasNetwork: Boolean) {
         if (hasNetwork) {
-            btn_route.visible(500)
+            iv_show_on_map_destination.visible(500)
+            iv_show_on_map_residence.visible(500)
         } else {
-            ViewCompat.animate(btn_route).setDuration(500).alpha(1f).alphaBy(0.0f).withEndAction {
-                btn_route.alpha = 0.0f
-                btn_route.gone()
+            ViewCompat.animate(iv_show_on_map_destination).setDuration(500).alpha(1f).alphaBy(0.0f).withEndAction {
+                iv_show_on_map_destination.alpha = 0.0f
+                iv_show_on_map_destination.gone()
+            }.start()
+            ViewCompat.animate(iv_show_on_map_residence).setDuration(500).alpha(1f).alphaBy(0.0f).withEndAction {
+                iv_show_on_map_residence.alpha = 0.0f
+                iv_show_on_map_residence.gone()
             }.start()
         }
     }
@@ -303,4 +313,5 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
 interface FragmentListenerCallback {
     fun showMapActivity(addressFrom: Address?, addressTo: Address?)
+    fun addessFromMap()
 }

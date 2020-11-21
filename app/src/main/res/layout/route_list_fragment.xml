@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -127,39 +128,88 @@
                 android:paddingEnd="5dp"
                 android:text="@{routeNotice.resetingTime}" />
 
-            <TextView
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ll_address_to_residence"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/residence_adress"
-                android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/et_residence_adress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:hint="@string/residence_adress"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:text="@{routeNotice.residenceAdress.address}" />
+                <TextView
+                    android:id="@+id/tv_residence_adress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/residence_adress"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    app:layout_constraintRight_toRightOf="@id/et_residence_adress"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/destination_adress"
-                android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                <EditText
+                    android:id="@+id/et_residence_adress"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:hint="@string/residence_adress"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="@{routeNotice.residenceAdress.address}"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/iv_show_on_map_residence"
+                    app:layout_constraintTop_toBottomOf="@id/tv_residence_adress" />
 
-            <EditText
-                android:id="@+id/et_destination_adress"
+                <ImageView
+                    android:id="@+id/iv_show_on_map_residence"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:foregroundGravity="center"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_map_pointer"
+                    app:layout_constraintBottom_toBottomOf="@id/et_residence_adress"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/et_residence_adress" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:hint="@string/destination_adress2"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:text="@{routeNotice.destinationAdress.address}" />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_destination_adress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/destination_adress"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@id/et_destination_adress"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/et_destination_adress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:hint="@string/destination_adress2"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    app:layout_constraintRight_toLeftOf="@id/iv_show_on_map_destination"
+                    android:text="@{routeNotice.destinationAdress.address}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/et_destination_adress" />
+
+                <ImageView
+                    android:id="@+id/iv_show_on_map_destination"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:foregroundGravity="center"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_map_pointer"
+                    app:layout_constraintBottom_toBottomOf="@id/et_destination_adress"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/et_destination_adress" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <View
                 android:layout_width="match_parent"
@@ -182,12 +232,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="40dp"
-                android:visibility="gone"
                 android:background="@android:color/holo_blue_dark"
                 android:text="@string/build_road"
                 android:textColor="@android:color/white"
                 android:textSize="15sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
 
         </LinearLayout>

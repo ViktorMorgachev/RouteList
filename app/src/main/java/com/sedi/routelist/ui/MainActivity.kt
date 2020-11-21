@@ -268,6 +268,9 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 
     interface UpdateUIListener {
         fun updateUI(hasNetwork: Boolean)
@@ -283,6 +286,10 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
     override fun showMapActivity(addressFrom: Address?, addressTo: Address?) {
         MapActivity.init(addressFrom, addressTo)
+        startActivity(Intent(this, MapActivity::class.java))
+    }
+
+    override fun addessFromMap() {
         startActivity(Intent(this, MapActivity::class.java))
     }
 
