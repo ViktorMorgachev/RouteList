@@ -286,14 +286,17 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
     override fun showMapActivity(addressFrom: Address?, addressTo: Address?) {
         MapActivity.init(addressFrom, addressTo)
-        intent.putExtra(MapActivity.KEY_WORK_MODE, Mode.GET_ROUTE)
-        startActivity(Intent(this, MapActivity::class.java))
+        val intent = Intent(this, MapActivity::class.java).apply {
+            putExtra(MapActivity.KEY_WORK_MODE, Mode.GET_ROUTE.name)
+        }
+        startActivity(intent)
     }
 
     override fun addessFromMap() {
-        val intent = Intent(this, MapActivity::class.java)
-        intent.putExtra(MapActivity.KEY_WORK_MODE, Mode.GET_POINT)
-        startActivity(Intent(this, MapActivity::class.java))
+        val intent = Intent(this, MapActivity::class.java).apply {
+            putExtra(MapActivity.KEY_WORK_MODE, Mode.GET_POINT.name)
+        }
+        startActivity(intent)
     }
 
 }

@@ -34,25 +34,32 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraI
         var mapViewBundle: Bundle? = null
 
 
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
-            if (savedInstanceState.getInt(KEY_WORK_MODE) == Mode.GET_POINT.modeValue) {
-                panel_map_center.visible()
-                mapMode = Mode.GET_POINT
+        log("KEY_WORK_MODE: ${intent.extras?.get(KEY_WORK_MODE)}")
 
-                panel_map_center.setOnClickListener {
-                    if (!tv_address.isVisible) {
-                        tv_address.visible(500)
-                    } else {
-                        tv_address.gone(500)
-                    }
+        if (intent.extras?.get(
+                KEY_WORK_MODE
+            ) == Mode.GET_POINT.name
+        ) {
+            panel_map_center.visible()
+            mapMode = Mode.GET_POINT
+
+            iv_map_center.setOnClickListener {
+                log("panel_map_center clicked:")
+                if (!tv_address.isVisible) {
+                    tv_address.visible(500)
+                } else {
+                    tv_address.gone(500)
                 }
-                // Инициализация только тех элементов отвечающих за работу с одной точкой
-            } else {
-                mapMode = Mode.GET_ROUTE
-                panel_map_center.gone()
             }
+
+        } else {
+            mapMode = Mode.GET_ROUTE
+            panel_map_center.gone()
         }
+
+        if (savedInstanceState != null)
+            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
+
 
 
         MapsInitializer.setApiKey(resources.getString(R.string.api_key))
@@ -92,7 +99,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraI
     }
 
     override fun onCameraIdle() {
-        log("Position: ${hMap?.cameraPosition?.target}")
         if (tv_address != null)
             tv_address.text = "${hMap?.cameraPosition?.target}"
     }
@@ -129,6 +135,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraI
 
     override fun onResume() {
         super.onResume()
+
+
+
         mapView.onResume()
     }
 
@@ -149,7 +158,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraI
 
 }
 
-enum class Mode(val modeValue: Int) {
-    GET_ROUTE(1),
-    GET_POINT(2)
+enum class Mode {
+    GET_ROUTE,
+    GET_POINT
 }
