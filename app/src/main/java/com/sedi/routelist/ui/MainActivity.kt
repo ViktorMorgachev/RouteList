@@ -299,4 +299,10 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         startActivity(intent)
     }
 
+    override fun showSearchAddress(address: String) {
+        // TODO запускаем активность с созданием SearchFragment, так как нам нужно передавать данные с поля ввода в активность,
+        // Чтобы пользователь успешно завершил ввод адреса
+        startActivity(Intent(this, SearchAddressActivity::class.java))
+    }
+
 }

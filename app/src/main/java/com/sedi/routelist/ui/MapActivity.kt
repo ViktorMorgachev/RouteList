@@ -1,5 +1,6 @@
 package com.sedi.routelist.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -50,6 +51,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraI
                 } else {
                     tv_address.gone(500)
                 }
+            }
+
+            tv_address.setOnClickListener {
+                startActivity(Intent(this, SearchAddressActivity::class.java))
             }
 
         } else {

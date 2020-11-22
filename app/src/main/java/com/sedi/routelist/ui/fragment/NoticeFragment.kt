@@ -321,4 +321,5 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 interface FragmentListenerCallback {
     fun showMapActivity(addressFrom: Address?, addressTo: Address?)
     fun addessFromMap()
+    fun showSearchAddress(address: String)
 }
