@@ -17,12 +17,12 @@ import com.sedi.routelist.commons.gone
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.commons.visible
 import com.sedi.routelist.models.Address
+import com.sedi.routelist.network.GeoCodingType
 import com.sedi.routelist.network.GeocodingService
 import com.sedi.routelist.network.geocode.reverse.ReverseGeocode
 import com.sedi.routelist.presenters.IActionResult
 import kotlinx.android.synthetic.main.huawei_map_layout.*
 import kotlinx.android.synthetic.main.item_center_map.*
-import org.json.JSONObject
 
 
 class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleListener,
@@ -116,24 +116,39 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         val location = hMap?.cameraPosition?.target
 
         if (location != null) {
-            GeocodingService.reverseGeocoding(location, object : IActionResult {
-                override fun result(result: Any?, exception: Exception?) {
-                    if (result != null) {
-                        val data = result as ReverseGeocode
-                        if (data.sites.isNotEmpty()) {
-                            tv_address.text = data.sites[0].formatAddress
-                            currentAddress = Address(
-                                data.sites[0].formatAddress,
-                                LatLng(data.sites[0].location.lat, data.sites[0].location.lng)
-                            )
-                            log("Result $data")
-                        }
+            GeocodingService.reverseGeocoding(
+                geoCodingType,
+                location,
+                object : IActionResult {
+                    override fun result(result: Any?, exception: Exception?) {
+                        if (result != null) {
+                            if (geoCodingType == GeoCodingType.HUAWEI) {
+                                val data = result as ReverseGeocode
+                                if (data.sites != null && data.sites.isNotEmpty()) {
+                                    tv_address.post {
+                                        tv_address.text = data.sites[0].formatAddress
+                                    }
+                                    currentAddress = Address(
+                                        data.sites[0].formatAddress,
+                                        LatLng(
+                                            data.sites[0].location.lat,
+                                            data.sites[0].location.lng
+                                        )
+                                    )
+                                }
+                            } else {
+                                val data = result as Address
+                                currentAddress = data
+                                tv_address.post {
+                                    tv_address.text = data.address
+                                }
+                            }
 
-                    } else if (exception != null) {
-                        log(exception)
+                        } else if (exception != null) {
+                            log(exception)
+                        }
                     }
-                }
-            })
+                })
         }
     }
 
@@ -197,6 +212,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         private var addresFrom: Address? = null
         private var addresTo: Address? = null
         private const val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
+        private val geoCodingType = GeoCodingType.OpenStreetMap
         fun init(
             addressFirst: Address?,
             addressSecond: Address?

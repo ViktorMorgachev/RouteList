@@ -6,7 +6,7 @@
 
 
     <androidx.cardview.widget.CardView
-        android:layout_width="200dp"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@drawable/location_info"
@@ -17,6 +17,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="horizontal">
 
             <TextView
@@ -31,13 +32,13 @@
 
             <Button
                 android:id="@+id/btn_save_address"
-                android:layout_width="40dp"
-                android:layout_height="20dp"
+                android:layout_width="50dp"
+                android:layout_height="30dp"
                 android:layout_gravity="end"
                 android:background="@drawable/button_ok"
                 android:gravity="center"
                 android:text="@android:string/ok"
-                android:textSize="15px" />
+                android:textSize="15sp" />
 
         </LinearLayout>
 
