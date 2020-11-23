@@ -1,5 +1,6 @@
 package com.sedi.routelist.network
 
+import android.app.Application
 import com.google.gson.GsonBuilder
 import com.huawei.hms.maps.model.LatLng
 import com.sedi.routelist.MyApplication
@@ -9,6 +10,7 @@ import com.sedi.routelist.models.Address
 import com.sedi.routelist.network.geocode.reverse.ReverseGeocode
 import com.sedi.routelist.network.geocode.reverse.osm.Addresses
 import com.sedi.routelist.presenters.IActionResult
+import com.sedi.routelist.ui.MapActivity
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -35,18 +37,14 @@ object GeocodingService {
 
     fun reverseOSMGeocoding(latLng: LatLng, iActionResult: IActionResult) {
         val url =
-            "https://nominatim.openstreetmap.org/search?format=json&accept-language=ru&q=${latLng.latitude},${latLng.longitude}&poligon=1&addressdetails=1"
+            "https://nominatim.openstreetmap.org/search?format=json&accept-language=${MyApplication.language}&q=${latLng.latitude},${latLng.longitude}&poligon=1&addressdetails=1"
         val client = OkHttpClient()
         val request: Request = Request.Builder()
             .url(url)
             .get()
             .build()
 
-        log(
-            "Request: URL " +
-                    "https://nominatim.openstreetmap.org/search?format=json&accept-language=ru&q=${latLng.latitude},${latLng.longitude}&poligon=1&addressdetails=1 | " +
-                    "Location: $latLng | Language: $MyApplication.language"
-        )
+        log("Request: URL " + "$url |")
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 log("ReverseGeocoding: $e", LOG_LEVEL.ERROR)

@@ -12,7 +12,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.huawei.hms.site.api.model.Site
-import com.huawei.hms.site.widget.SearchFilter
 import com.huawei.hms.site.widget.SearchIntent
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
@@ -48,14 +47,6 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
         runOnUiThread {
             MyApplication.instance.initDB(this)
         }
-
-        if (searchIntent == null)
-            searchIntent = SearchIntent().apply {
-                setApiKey(resources.getString(R.string.api_key))
-                setSearchFilter(SearchFilter().apply {
-                    language = MyApplication.language
-                })
-            }
 
 
         log("Language: ${MyApplication.language}")
@@ -230,7 +221,7 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
             return
         }
         try {
-            (pagerAdapter?.getItem(pagerAdapter!!.noticeFragmentHelper.currentPosition - 1) as PastNoticeCallback)
+            (pagerAdapter?.getItem(pagerAdapter!!.noticeFragmentHelper.currentPosition - 1) as FragmentListener)
                 .pastNotice(
                     pagerAdapter!!.noticeFragmentHelper.noticeForCopy!!
                 )
@@ -255,10 +246,6 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
         pagerAdapter?.updateFragments(hasNetwork)
     }
 
-
-    interface PastNoticeCallback {
-        fun pastNotice(notice: Notice)
-    }
 
     fun refreshActivity() {
         val refresh = Intent(
@@ -287,38 +274,47 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
             if (SearchIntent.isSuccess(resultCode)) {
                 if (searchIntent != null) {
                     val site: Site = searchIntent!!.getSiteFromIntent(data)
+                    log("RememberData: ${RememberData.showAll()}")
                     if (RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) != null) {
                         val currentEditText =
                             RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) as EditText
-                        val currentPosition =
-                            RememberData.remindMe(RememberData.KEYS.POSITION.value)
                         val currentAdress =
                             RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address
-
-                        log(
-                            "currentEditText: $currentEditText " +
-                                    "currentAdress $currentAdress " +
-                                    "currentPosition $currentPosition"
-                        )
-                        if (currentPosition != null && currentEditText != null) {
-                            currentEditText.setText(site.formatAddress)
+                        currentEditText.setText(currentAdress.address)
+                        try {
+                            (pagerAdapter?.getItem(pagerAdapter!!.noticeFragmentHelper.currentPosition - 1) as FragmentListener).initNotice()
+                        } catch (e: ClassCastException) {
+                            onError(e)
+                        } catch (e: Exception) {
+                            onError(e)
                         }
                     }
                 }
-                RememberData.forgetAll()
+
             }
         } else {
             if (resultCode == RESULT_OK && requestCode == MapActivity.KEY_REQUEST_CODE_GET_POINT) {
-                if (RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) != null){
-                    val editText = RememberData.remindMe(RememberData.KEYS.EDITTEXT.value)
-
+                if (RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) != null) {
+                    log("RememberData: ${RememberData.showAll()}")
+                    val currentEditText =
+                        RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) as EditText
+                    currentEditText.setText((RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address).address)
+                    try {
+                        (pagerAdapter?.getItem(pagerAdapter!!.noticeFragmentHelper.currentPosition - 1) as FragmentListener).initNotice()
+                    } catch (e: ClassCastException) {
+                        onError(e)
+                    } catch (e: Exception) {
+                        onError(e)
+                    }
                 }
             }
         }
     }
 
-    interface UpdateUIListener {
+    interface FragmentListener {
         fun updateUI(hasNetwork: Boolean)
+        fun pastNotice(notice: Notice)
+        fun initNotice()
     }
 
     override fun onRequestPermissionsResult(
@@ -345,10 +341,7 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
     }
 
     override fun showSearchAddress() {
-        startActivityForResult(
-            searchIntent?.getIntent(this),
-            SearchIntent.SEARCH_REQUEST_CODE
-        )
+        startActivityForResult(searchIntent?.getIntent(this), SearchIntent.SEARCH_REQUEST_CODE)
     }
 
 }
@@ -375,9 +368,10 @@ object RememberData {
         values.remove(key)
     }
 
+    fun showAll() = values
+
     enum class KEYS(val value: Int) {
         ADDRESS(0),
-        EDITTEXT(1),
-        POSITION(2)
+        EDITTEXT(1)
     }
 }

@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -17,10 +15,8 @@ import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.TimePicker
 import androidx.core.view.ViewCompat
-import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.*
 import com.sedi.routelist.databinding.RouteListFragmentBinding
@@ -33,9 +29,9 @@ import com.sedi.routelist.ui.RememberData
 import kotlinx.android.synthetic.main.route_list_fragment.*
 
 
-class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
+class NoticeFragment : Fragment(),
     DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener,
-    MainActivity.UpdateUIListener {
+    MainActivity.FragmentListener {
 
     //Data
     lateinit var binding: RouteListFragmentBinding
@@ -80,17 +76,16 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         }
 
         binding.ivShowOnMapDestination.setOnClickListener {
-            fragmentListenerCallback?.addessFromMap()
             RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.destinationAdress)
-            RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
-            RememberData.rememberMe(RememberData.KEYS.POSITION.value, position!!)
+            RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etDestinationAdress)
+            fragmentListenerCallback?.addessFromMap()
         }
 
         binding.ivShowOnMapResidence.setOnClickListener {
-            fragmentListenerCallback?.addessFromMap()
-            RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.destinationAdress)
+            RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.residenceAdress)
             RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
-            RememberData.rememberMe(RememberData.KEYS.POSITION.value, position!!)
+            fragmentListenerCallback?.addessFromMap()
+
         }
 
         binding.btnSave.setOnClickListener {
@@ -106,15 +101,16 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
             binding.etDestinationAdress.setOnTouchListener { _, _ ->
                 RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.destinationAdress)
-                RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
-                RememberData.rememberMe(RememberData.KEYS.POSITION.value, position!!)
+                RememberData.rememberMe(
+                    RememberData.KEYS.EDITTEXT.value,
+                    binding.etDestinationAdress
+                )
                 fragmentListenerCallback?.showSearchAddress()
                 true
             }
             binding.etResidenceAdress.setOnTouchListener { _, _ ->
                 RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.residenceAdress)
                 RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
-                RememberData.rememberMe(RememberData.KEYS.POSITION.value, position!!)
                 fragmentListenerCallback?.showSearchAddress()
                 true
             }
@@ -197,17 +193,6 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         log("Current position: $position")
     }
 
-    private fun initNotice() {
-        notice?.fio = et_fio.text.toString()
-        notice?.date = et_date.text.toString()
-        notice?.destinationAdress?.address = et_destination_adress.text.toString()
-        notice?.residenceAdress?.address = et_residence_adress.text.toString()
-        notice?.exitTime = et_exit_time.text.toString()
-        notice?.reason = et_reason.text.toString()
-        notice?.resetingTime = et_reseting_time.text.toString()
-        notice?.phoneNumber = et_phone.text.toString()
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -269,6 +254,28 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
             log(e)
         }
 
+    }
+
+    override fun initNotice() {
+
+        notice?.fio = et_fio.text.toString()
+        notice?.date = et_date.text.toString()
+        notice?.destinationAdress?.address = et_destination_adress.text.toString()
+        notice?.residenceAdress?.address = et_residence_adress.text.toString()
+        notice?.exitTime = et_exit_time.text.toString()
+        notice?.reason = et_reason.text.toString()
+        notice?.resetingTime = et_reseting_time.text.toString()
+        notice?.phoneNumber = et_phone.text.toString()
+        val address = RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address
+        val editText = RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) as EditText
+        if (editText.tag == "address_residence") {
+            notice?.residenceAdress?.location = address.location
+        } else {
+            notice?.destinationAdress?.location = address.location
+        }
+        RememberData.forgetAll()
+
+        log("Notice: $notice")
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {

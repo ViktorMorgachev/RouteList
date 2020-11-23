@@ -22,5 +22,5 @@ data class Notice(
 ) : Parcelable
 
 @Parcelize
-data class Address(var address: String = "", val location: LatLng = LatLng(0.0, 0.0)) : Parcelable
+data class Address(var address: String = "", var location: LatLng = LatLng(0.0, 0.0)) : Parcelable
 

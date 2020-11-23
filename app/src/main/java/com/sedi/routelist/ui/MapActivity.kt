@@ -1,12 +1,10 @@
 package com.sedi.routelist.ui
 
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
 import androidx.core.view.isVisible
-import com.huawei.hms.maps.CameraUpdateFactory
-import com.huawei.hms.maps.HuaweiMap
-import com.huawei.hms.maps.MapsInitializer
-import com.huawei.hms.maps.OnMapReadyCallback
+import com.huawei.hms.maps.*
 import com.huawei.hms.maps.model.LatLng
 import com.huawei.hms.site.api.model.Site
 import com.huawei.hms.site.widget.SearchFilter
@@ -45,11 +43,13 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
             panel_map_center.visible()
             mapMode = Mode.GET_POINT
 
+            currentAddress = RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address
+
             iv_map_center.setOnClickListener {
-                if (!tv_address.isVisible) {
-                    tv_address.visible(500)
+                if (!ll_address_info.isVisible) {
+                    ll_address_info.visible(500)
                 } else {
-                    tv_address.gone(500)
+                    ll_address_info.gone(500)
                 }
             }
 
@@ -74,15 +74,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         if (savedInstanceState != null)
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
 
-        if (searchIntent == null)
-            searchIntent = SearchIntent().apply {
-                setApiKey(MyApplication.api_key)
-                setSearchFilter(SearchFilter().apply {
-                    language = MyApplication.language
-                })
-            }
-
-
         MapsInitializer.setApiKey(resources.getString(R.string.api_key))
         mapView.onCreate(mapViewBundle)
 
@@ -92,6 +83,16 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
     override fun onMapReady(map: HuaweiMap) {
         //get map instance in a callback method
+
+        if (mapMode == Mode.GET_POINT)
+            if (currentAddress != null) {
+
+                log("CurrentAddress: $currentAddress")
+                tv_address.setText(currentAddress!!.address)
+                // Отключаем слушатель на время
+                removeMapIdleListenerForTimeMilliss(600)
+                onMapClick(currentAddress!!.location)
+            }
 
         hMap = map
         hMap!!.isMyLocationEnabled = true
@@ -167,11 +168,38 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                     val site: Site = searchIntent!!.getSiteFromIntent(data)
                     currentAddress =
                         Address(site.formatAddress, LatLng(site.location.lat, site.location.lng))
+                    log("currentAddress: $currentAddress")
+                    removeMapListener()
                     hMap?.animateCamera(
-                        CameraUpdateFactory.newLatLng(LatLng(site.location.lat, site.location.lng))
-                    )
+                        CameraUpdateFactory.newLatLngZoom(
+                            LatLng(
+                                site.location.lat,
+                                site.location.lng
+                            ), 12f
+                        ), object : HuaweiMap.CancelableCallback {
+                            override fun onFinish() {
+                                hMap?.setOnCameraIdleListener(this@MapActivity)
+                            }
 
+                            override fun onCancel() {
+                                hMap?.setOnCameraIdleListener(this@MapActivity)
+                            }
+                        })
                 }
+            }
+        }
+    }
+
+    private fun removeMapListener() {
+        hMap?.setOnCameraIdleListener { }
+    }
+
+    private fun removeMapIdleListenerForTimeMilliss(duration: Long = 600) {
+        hMap?.setOnCameraIdleListener { }
+        AsyncTask.execute {
+            Thread.sleep(duration)
+            runOnUiThread {
+                hMap?.setOnCameraIdleListener(this)
             }
         }
     }
@@ -207,7 +235,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     }
 
     companion object {
-        const val KEY_REQUEST_CODE_GET_POINT = 1
+        const val KEY_REQUEST_CODE_GET_POINT = 2
         const val KEY_WORK_MODE = "KEY_WORK_MODE"
         private var addresFrom: Address? = null
         private var addresTo: Address? = null

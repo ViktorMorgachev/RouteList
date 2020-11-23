@@ -3,8 +3,6 @@ package com.sedi.routelist.ui
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import com.sedi.routelist.commons.LOG_LEVEL
-import com.sedi.routelist.commons.log
 import com.sedi.routelist.models.Notice
 
 class NoticesPagerAdapter(fm: FragmentManager, behavior: Int) :
@@ -34,7 +32,7 @@ class NoticesPagerAdapter(fm: FragmentManager, behavior: Int) :
     fun updateFragments(hasNetwork: Boolean) {
         mFragmentList.forEach {
             if (it.isResumed){
-                (it as MainActivity.UpdateUIListener).updateUI(hasNetwork)
+                (it as MainActivity.FragmentListener).updateUI(hasNetwork)
             }
 
         }
