@@ -14,11 +14,13 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
+import android.widget.EditText
 import android.widget.TimePicker
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.*
 import com.sedi.routelist.databinding.RouteListFragmentBinding
@@ -299,14 +301,16 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
             iv_show_on_map_destination.visible(500)
             iv_show_on_map_residence.visible(500)
         } else {
-            ViewCompat.animate(iv_show_on_map_destination).setDuration(500).alpha(1f).alphaBy(0.0f).withEndAction {
-                iv_show_on_map_destination.alpha = 0.0f
-                iv_show_on_map_destination.gone()
-            }.start()
-            ViewCompat.animate(iv_show_on_map_residence).setDuration(500).alpha(1f).alphaBy(0.0f).withEndAction {
-                iv_show_on_map_residence.alpha = 0.0f
-                iv_show_on_map_residence.gone()
-            }.start()
+            ViewCompat.animate(iv_show_on_map_destination).setDuration(500).alpha(1f).alphaBy(0.0f)
+                .withEndAction {
+                    iv_show_on_map_destination.alpha = 0.0f
+                    iv_show_on_map_destination.gone()
+                }.start()
+            ViewCompat.animate(iv_show_on_map_residence).setDuration(500).alpha(1f).alphaBy(0.0f)
+                .withEndAction {
+                    iv_show_on_map_residence.alpha = 0.0f
+                    iv_show_on_map_residence.gone()
+                }.start()
         }
     }
 
@@ -321,5 +325,5 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 interface FragmentListenerCallback {
     fun showMapActivity(addressFrom: Address?, addressTo: Address?)
     fun addessFromMap()
-    fun showSearchAddress(address: String)
+    fun showSearchAddress(address: String, currentEditableField: EditText, currentPosition: Int)
 }

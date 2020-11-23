@@ -5,13 +5,15 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import com.huawei.hms.site.api.model.Site
+import com.huawei.hms.site.widget.SearchFilter
+import com.huawei.hms.site.widget.SearchIntent
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.backgrounds.ConnectivityInformation
@@ -26,9 +28,10 @@ import com.sedi.routelist.ui.dialogfragment.ChooseLanguageDialog
 import com.sedi.routelist.ui.fragment.FragmentListenerCallback
 import com.sedi.routelist.ui.fragment.NoticeFragment
 import java.util.*
+import kotlin.collections.HashMap
 
 
-class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IResultCalback,
+class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultCalback,
     OnConnectivityInformationChangedListener, FragmentListenerCallback {
 
     private var viewPager: ViewPager? = null
@@ -46,6 +49,22 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
             MyApplication.instance.initDB(this)
         }
 
+        if (searchIntent == null)
+            searchIntent = SearchIntent().apply {
+                setApiKey(resources.getString(R.string.api_key))
+                setSearchFilter(SearchFilter().apply {
+                    language = PrefsManager.getIntance(this@MainActivity)
+                        .getValue(PrefsManager.PrefsKey.LOCALE, "en")
+                })
+            }
+
+
+        log(
+            "Language: ${
+                PrefsManager.getIntance(this)
+                    .getValue(PrefsManager.PrefsKey.LOCALE, "en")
+            }"
+        )
 
         connectivityListener = ConnectivityListener(this)
         connectivityListener?.register()
@@ -270,6 +289,32 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (SearchIntent.SEARCH_REQUEST_CODE == requestCode) {
+            if (SearchIntent.isSuccess(resultCode)) {
+                if (searchIntent != null) {
+                    val site: Site = searchIntent!!.getSiteFromIntent(data)
+                    if (RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) != null) {
+                        val currentEditText =
+                            RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) as EditText
+                        val currentPosition =
+                            RememberData.remindMe(RememberData.KEYS.POSITION.value)
+                        val currentAdress =
+                            RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address
+
+                        log(
+                            "currentEditText: $currentEditText " +
+                                    "currentAdress $currentAdress " +
+                                    "currentPosition $currentPosition"
+                        )
+                        if (currentPosition != null && currentEditText != null) {
+                            currentEditText.setText(site.formatAddress)
+                        }
+                    }
+                }
+
+                RememberData.forgetAll()
+            }
+        }
     }
 
     interface UpdateUIListener {
@@ -299,10 +344,43 @@ class MainActivity : AppCompatActivity(), LifecycleObserver, IClickListener, IRe
         startActivity(intent)
     }
 
-    override fun showSearchAddress(address: String) {
-        // TODO запускаем активность с созданием SearchFragment, так как нам нужно передавать данные с поля ввода в активность,
-        // Чтобы пользователь успешно завершил ввод адреса
-        startActivity(Intent(this, SearchAddressActivity::class.java))
+    override fun showSearchAddress(
+        address: String,
+        currentEditableField: EditText,
+        currentPosition: Int
+    ) {
+        RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, address)
+        RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, currentEditableField)
+        RememberData.rememberMe(RememberData.KEYS.POSITION.value, currentPosition)
     }
 
+}
+
+object RememberData {
+    private val values = HashMap<Int, Any>()
+
+    fun rememberMe(key: Int, data: Any) {
+        if (values.containsKey(key)) {
+            values.remove(key)
+        }
+        values[key] = data
+    }
+
+    fun remindMe(key: Int): Any? {
+        return values[key]
+    }
+
+    fun forgetAll() {
+        values.clear()
+    }
+
+    fun forgetMe(key: Int) {
+        values.remove(key)
+    }
+
+    enum class KEYS(val value: Int) {
+        ADDRESS(0),
+        EDITTEXT(1),
+        POSITION(2)
+    }
 }

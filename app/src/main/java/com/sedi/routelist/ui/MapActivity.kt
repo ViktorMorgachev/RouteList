@@ -2,9 +2,8 @@ package com.sedi.routelist.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.huawei.hms.maps.CameraUpdateFactory
@@ -12,6 +11,9 @@ import com.huawei.hms.maps.HuaweiMap
 import com.huawei.hms.maps.MapsInitializer
 import com.huawei.hms.maps.OnMapReadyCallback
 import com.huawei.hms.maps.model.LatLng
+import com.huawei.hms.site.api.model.Site
+import com.huawei.hms.site.widget.SearchFilter
+import com.huawei.hms.site.widget.SearchIntent
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.DoubleClickListener
 import com.sedi.routelist.commons.gone
@@ -23,7 +25,7 @@ import kotlinx.android.synthetic.main.huawei_map_layout.*
 import kotlinx.android.synthetic.main.item_center_map.*
 
 
-class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleListener,
+class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleListener,
     HuaweiMap.OnMapClickListener {
 
     private var hMap: HuaweiMap? = null
@@ -35,8 +37,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraI
         var mapViewBundle: Bundle? = null
 
 
-        log("KEY_WORK_MODE: ${intent.extras?.get(KEY_WORK_MODE)}")
-
         if (intent.extras?.get(
                 KEY_WORK_MODE
             ) == Mode.GET_POINT.name
@@ -45,7 +45,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraI
             mapMode = Mode.GET_POINT
 
             iv_map_center.setOnClickListener {
-                log("panel_map_center clicked:")
                 if (!tv_address.isVisible) {
                     tv_address.visible(500)
                 } else {
@@ -54,7 +53,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraI
             }
 
             tv_address.setOnClickListener {
-                startActivity(Intent(this, SearchAddressActivity::class.java))
+                startActivityForResult(
+                    searchIntent?.getIntent(this),
+                    SearchIntent.SEARCH_REQUEST_CODE
+                )
             }
 
         } else {
@@ -65,17 +67,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraI
         if (savedInstanceState != null)
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
 
+        if (searchIntent == null)
+            searchIntent = SearchIntent().apply {
+                setApiKey(resources.getString(R.string.api_key))
+                setSearchFilter(SearchFilter().apply {
+                    language = PrefsManager.getIntance(this@MapActivity)
+                        .getValue(PrefsManager.PrefsKey.LOCALE, "en")
+                })
+            }
 
 
         MapsInitializer.setApiKey(resources.getString(R.string.api_key))
         mapView.onCreate(mapViewBundle)
-        //get map instance
-
-        mapView.setOnClickListener(object : DoubleClickListener() {
-            override fun onDoubleClick(v: View) {
-            }
-
-        })
 
         mapView.getMapAsync(this)
     }
@@ -110,9 +113,23 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, HuaweiMap.OnCameraI
 
 
     override fun onMapClick(location: LatLng?) {
-        log("onMapClick")
         if (location != null) {
             hMap?.animateCamera(CameraUpdateFactory.newLatLng(location))
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (SearchIntent.SEARCH_REQUEST_CODE == requestCode) {
+            if (SearchIntent.isSuccess(resultCode)) {
+                if (searchIntent != null) {
+                    val site: Site = searchIntent!!.getSiteFromIntent(data)
+                    hMap?.animateCamera(
+                        CameraUpdateFactory.newLatLng(LatLng(site.location.lat, site.location.lng))
+                    )
+                    tv_address.text = site.formatAddress
+                }
+            }
         }
     }
 

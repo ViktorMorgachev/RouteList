@@ -33,7 +33,10 @@ class NoticesPagerAdapter(fm: FragmentManager, behavior: Int) :
 
     fun updateFragments(hasNetwork: Boolean) {
         mFragmentList.forEach {
-            (it as MainActivity.UpdateUIListener).updateUI(hasNetwork)
+            if (it.isResumed){
+                (it as MainActivity.UpdateUIListener).updateUI(hasNetwork)
+            }
+
         }
     }
 
