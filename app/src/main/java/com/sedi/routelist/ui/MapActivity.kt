@@ -84,6 +84,14 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     override fun onMapReady(map: HuaweiMap) {
         //get map instance in a callback method
 
+        hMap = map
+        hMap!!.isMyLocationEnabled = true
+        hMap!!.uiSettings.isMyLocationButtonEnabled = true
+        hMap!!.setLanguage(MyApplication.language)
+        hMap!!.setOnCameraIdleListener(this)
+        hMap!!.setOnMapClickListener(this)
+        log("onMapReady")
+
         if (mapMode == Mode.GET_POINT)
             if (currentAddress != null) {
 
@@ -94,13 +102,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                 onMapClick(currentAddress!!.location)
             }
 
-        hMap = map
-        hMap!!.isMyLocationEnabled = true
-        hMap!!.uiSettings.isMyLocationButtonEnabled = true
-        hMap!!.setLanguage(MyApplication.language)
-        hMap!!.setOnCameraIdleListener(this)
-        hMap!!.setOnMapClickListener(this)
-        log("onMapReady")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

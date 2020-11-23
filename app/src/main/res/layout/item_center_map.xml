@@ -34,6 +34,7 @@
             <Button
                 android:id="@+id/btn_save_address"
                 android:layout_width="40dp"
+                android:textColor="@android:color/white"
                 android:layout_height="20dp"
                 android:layout_gravity="end"
                 android:background="@drawable/button_ok"
