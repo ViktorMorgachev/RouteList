@@ -96,6 +96,25 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
         if (checkNetworkConnectivity(requireActivity())) {
             binding.ivShowOnMapDestination.visible()
             binding.ivShowOnMapResidence.visible()
+
+            binding.etDestinationAdress.setOnTouchListener { _, _ ->
+                fragmentListenerCallback?.showSearchAddress(
+                    "",
+                    binding.etDestinationAdress,
+                    position!!
+                )
+                true
+            }
+            binding.etResidenceAdress.setOnTouchListener { _, _ ->
+                fragmentListenerCallback?.showSearchAddress(
+                    "",
+                    binding.etResidenceAdress,
+                    position!!
+                )
+                true
+            }
+
+
         } else {
             binding.ivShowOnMapDestination.gone()
             binding.ivShowOnMapResidence.gone()

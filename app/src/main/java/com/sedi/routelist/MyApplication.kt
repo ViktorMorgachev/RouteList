@@ -14,15 +14,22 @@ import java.util.*
 class MyApplication : Application() {
 
     private lateinit var noticeItemDatabase: NoticeItemDatabase
-
     override fun onCreate() {
         super.onCreate()
         instance = this
         // Set the API key.
-        MapsInitializer.setApiKey("CgB6e3x9u6Xmi/Y6ykebG2lYedCpeyc1sOgxO0kSOqjiuwYLiJAuxB/XqKOsuCSL7hngyxBGWWGw1rafWzIEmUaU")
+        if (PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.API_KEY, "").isEmpty())
+            PrefsManager.getIntance(this)
+                .setValue(PrefsManager.PrefsKey.API_KEY, resources.getString(R.string.api_key))
+
+        language = PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, "en")
+        api_key = PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.API_KEY, "")
+        MapsInitializer.setApiKey(api_key)
     }
 
     companion object {
+        var language = ""
+        var api_key = ""
         lateinit var instance: MyApplication
             private set
 
@@ -43,6 +50,7 @@ class MyApplication : Application() {
                 PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, "ru") as String
             conf.locale = Locale(localeCode)
             res.updateConfiguration(conf, dm)
+            language = localeCode
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }

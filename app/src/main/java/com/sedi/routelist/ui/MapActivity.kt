@@ -2,9 +2,6 @@ package com.sedi.routelist.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.huawei.hms.maps.CameraUpdateFactory
 import com.huawei.hms.maps.HuaweiMap
@@ -14,15 +11,18 @@ import com.huawei.hms.maps.model.LatLng
 import com.huawei.hms.site.api.model.Site
 import com.huawei.hms.site.widget.SearchFilter
 import com.huawei.hms.site.widget.SearchIntent
+import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
-import com.sedi.routelist.commons.DoubleClickListener
 import com.sedi.routelist.commons.gone
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.commons.visible
 import com.sedi.routelist.models.Address
-import com.sedi.routelist.models.PrefsManager
+import com.sedi.routelist.network.GeocodingService
+import com.sedi.routelist.network.geocode.reverse.ReverseGeocode
+import com.sedi.routelist.presenters.IActionResult
 import kotlinx.android.synthetic.main.huawei_map_layout.*
 import kotlinx.android.synthetic.main.item_center_map.*
+import org.json.JSONObject
 
 
 class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleListener,
@@ -69,10 +69,9 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
         if (searchIntent == null)
             searchIntent = SearchIntent().apply {
-                setApiKey(resources.getString(R.string.api_key))
+                setApiKey(MyApplication.api_key)
                 setSearchFilter(SearchFilter().apply {
-                    language = PrefsManager.getIntance(this@MapActivity)
-                        .getValue(PrefsManager.PrefsKey.LOCALE, "en")
+                    language = MyApplication.language
                 })
             }
 
@@ -90,7 +89,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         hMap = map
         hMap!!.isMyLocationEnabled = true
         hMap!!.uiSettings.isMyLocationButtonEnabled = true
-        hMap!!.setLanguage(PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, ""))
+        hMap!!.setLanguage(MyApplication.language)
         hMap!!.setOnCameraIdleListener(this)
         hMap!!.setOnMapClickListener(this)
         log("onMapReady")
@@ -107,8 +106,22 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     }
 
     override fun onCameraIdle() {
-        if (tv_address != null)
-            tv_address.text = "${hMap?.cameraPosition?.target}"
+        val location = hMap?.cameraPosition?.target
+
+        if (location != null) {
+            GeocodingService.reverseGeocoding(location, object : IActionResult {
+                override fun result(result: Any?, exception: Exception?) {
+                    if (result != null) {
+                        val data = result as ReverseGeocode
+                        log("Result $data")
+                        if (data.sites.isNotEmpty())
+                            tv_address.text = data.sites[0].formatAddress
+                    } else if (exception != null) {
+                        log(exception)
+                    }
+                }
+            })
+        }
     }
 
 
@@ -124,10 +137,11 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
             if (SearchIntent.isSuccess(resultCode)) {
                 if (searchIntent != null) {
                     val site: Site = searchIntent!!.getSiteFromIntent(data)
+                    tv_address.text = site.formatAddress
                     hMap?.animateCamera(
                         CameraUpdateFactory.newLatLng(LatLng(site.location.lat, site.location.lng))
                     )
-                    tv_address.text = site.formatAddress
+
                 }
             }
         }

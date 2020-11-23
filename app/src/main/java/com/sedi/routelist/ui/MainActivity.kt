@@ -53,18 +53,12 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
             searchIntent = SearchIntent().apply {
                 setApiKey(resources.getString(R.string.api_key))
                 setSearchFilter(SearchFilter().apply {
-                    language = PrefsManager.getIntance(this@MainActivity)
-                        .getValue(PrefsManager.PrefsKey.LOCALE, "en")
+                    language = MyApplication.language
                 })
             }
 
 
-        log(
-            "Language: ${
-                PrefsManager.getIntance(this)
-                    .getValue(PrefsManager.PrefsKey.LOCALE, "en")
-            }"
-        )
+        log("Language: ${MyApplication.language}")
 
         connectivityListener = ConnectivityListener(this)
         connectivityListener?.register()
@@ -113,7 +107,7 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
             val dm = res.displayMetrics
             val conf = res.configuration
             val localeCode =
-                PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, "ru")
+                PrefsManager.getIntance(this).getValue(PrefsManager.PrefsKey.LOCALE, "en")
             log("LocaleCode: $localeCode")
             conf.locale = Locale(localeCode)
             res.updateConfiguration(conf, dm)

@@ -89,7 +89,7 @@ class PrefsManager {
     }
 
     enum class PrefsKey {
-        FIRST_START, LOCALE
+        FIRST_START, LOCALE, API_KEY
     }
 
 }
