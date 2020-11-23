@@ -29,6 +29,7 @@ import com.sedi.routelist.models.Notice
 import com.sedi.routelist.presenters.IClickListener
 import com.sedi.routelist.ui.MainActivity
 import com.sedi.routelist.ui.NoticesPagerAdapter
+import com.sedi.routelist.ui.RememberData
 import kotlinx.android.synthetic.main.route_list_fragment.*
 
 
@@ -80,10 +81,16 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 
         binding.ivShowOnMapDestination.setOnClickListener {
             fragmentListenerCallback?.addessFromMap()
+            RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.destinationAdress)
+            RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
+            RememberData.rememberMe(RememberData.KEYS.POSITION.value, position!!)
         }
 
         binding.ivShowOnMapResidence.setOnClickListener {
             fragmentListenerCallback?.addessFromMap()
+            RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.destinationAdress)
+            RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
+            RememberData.rememberMe(RememberData.KEYS.POSITION.value, position!!)
         }
 
         binding.btnSave.setOnClickListener {
@@ -98,19 +105,17 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
             binding.ivShowOnMapResidence.visible()
 
             binding.etDestinationAdress.setOnTouchListener { _, _ ->
-                fragmentListenerCallback?.showSearchAddress(
-                    "",
-                    binding.etDestinationAdress,
-                    position!!
-                )
+                RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.destinationAdress)
+                RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
+                RememberData.rememberMe(RememberData.KEYS.POSITION.value, position!!)
+                fragmentListenerCallback?.showSearchAddress()
                 true
             }
             binding.etResidenceAdress.setOnTouchListener { _, _ ->
-                fragmentListenerCallback?.showSearchAddress(
-                    "",
-                    binding.etResidenceAdress,
-                    position!!
-                )
+                RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.residenceAdress)
+                RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
+                RememberData.rememberMe(RememberData.KEYS.POSITION.value, position!!)
+                fragmentListenerCallback?.showSearchAddress()
                 true
             }
 
@@ -344,5 +349,5 @@ class NoticeFragment : Fragment(), MainActivity.PastNoticeCallback,
 interface FragmentListenerCallback {
     fun showMapActivity(addressFrom: Address?, addressTo: Address?)
     fun addessFromMap()
-    fun showSearchAddress(address: String, currentEditableField: EditText, currentPosition: Int)
+    fun showSearchAddress()
 }

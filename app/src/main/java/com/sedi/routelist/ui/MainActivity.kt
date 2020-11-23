@@ -305,8 +305,14 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
                         }
                     }
                 }
-
                 RememberData.forgetAll()
+            }
+        } else {
+            if (resultCode == RESULT_OK && requestCode == MapActivity.KEY_REQUEST_CODE_GET_POINT) {
+                if (RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) != null){
+                    val editText = RememberData.remindMe(RememberData.KEYS.EDITTEXT.value)
+
+                }
             }
         }
     }
@@ -335,17 +341,14 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
         val intent = Intent(this, MapActivity::class.java).apply {
             putExtra(MapActivity.KEY_WORK_MODE, Mode.GET_POINT.name)
         }
-        startActivity(intent)
+        startActivityForResult(intent, MapActivity.KEY_REQUEST_CODE_GET_POINT)
     }
 
-    override fun showSearchAddress(
-        address: String,
-        currentEditableField: EditText,
-        currentPosition: Int
-    ) {
-        RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, address)
-        RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, currentEditableField)
-        RememberData.rememberMe(RememberData.KEYS.POSITION.value, currentPosition)
+    override fun showSearchAddress() {
+        startActivityForResult(
+            searchIntent?.getIntent(this),
+            SearchIntent.SEARCH_REQUEST_CODE
+        )
     }
 
 }

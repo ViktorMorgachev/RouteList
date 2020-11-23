@@ -30,6 +30,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
     private var hMap: HuaweiMap? = null
     private var mapMode: Mode = Mode.GET_ROUTE
+    private var currentAddress: Address? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +58,12 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                     searchIntent?.getIntent(this),
                     SearchIntent.SEARCH_REQUEST_CODE
                 )
+            }
+
+            btn_save_address.setOnClickListener {
+                RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, currentAddress!!)
+                setResult(RESULT_OK, intent);
+                finish();
             }
 
         } else {
@@ -113,9 +120,15 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                 override fun result(result: Any?, exception: Exception?) {
                     if (result != null) {
                         val data = result as ReverseGeocode
-                        log("Result $data")
-                        if (data.sites.isNotEmpty())
+                        if (data.sites.isNotEmpty()) {
                             tv_address.text = data.sites[0].formatAddress
+                            currentAddress = Address(
+                                data.sites[0].formatAddress,
+                                LatLng(data.sites[0].location.lat, data.sites[0].location.lng)
+                            )
+                            log("Result $data")
+                        }
+
                     } else if (exception != null) {
                         log(exception)
                     }
@@ -137,7 +150,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
             if (SearchIntent.isSuccess(resultCode)) {
                 if (searchIntent != null) {
                     val site: Site = searchIntent!!.getSiteFromIntent(data)
-                    tv_address.text = site.formatAddress
+                    currentAddress =
+                        Address(site.formatAddress, LatLng(site.location.lat, site.location.lng))
                     hMap?.animateCamera(
                         CameraUpdateFactory.newLatLng(LatLng(site.location.lat, site.location.lng))
                     )
@@ -178,6 +192,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     }
 
     companion object {
+        const val KEY_REQUEST_CODE_GET_POINT = 1
         const val KEY_WORK_MODE = "KEY_WORK_MODE"
         private var addresFrom: Address? = null
         private var addresTo: Address? = null
