@@ -146,7 +146,6 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:tag="address_residence"
                     android:id="@+id/et_residence_adress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -156,6 +155,7 @@
                     android:maxLines="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
+                    android:tag="address_residence"
                     android:text="@{routeNotice.residenceAdress.address}"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/iv_show_on_map_residence"
@@ -190,7 +190,6 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:tag="address_destination"
                     android:id="@+id/et_destination_adress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -200,6 +199,7 @@
                     android:maxLines="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
+                    android:tag="address_destination"
                     android:text="@{routeNotice.destinationAdress.address}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/iv_show_on_map_destination"
@@ -224,28 +224,37 @@
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
-            <Button
-                android:id="@+id/btn_save"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                android:background="@android:color/holo_blue_dark"
-                android:text="@string/save"
-                android:textColor="@android:color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btn_route"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                android:background="@android:color/holo_blue_dark"
-                android:text="@string/build_road"
-                android:textColor="@android:color/white"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
+                <Button
+                    android:id="@+id/btn_save"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/holo_blue_dark"
+                    android:text="@string/save"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/btn_route"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="5dp"
+                    android:layout_gravity="end"
+                    android:src="@drawable/ic_route"
+                    android:text="@string/build_road"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
 
         </LinearLayout>

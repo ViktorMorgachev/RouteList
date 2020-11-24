@@ -17,6 +17,7 @@ import android.widget.TimePicker
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.*
 import com.sedi.routelist.databinding.RouteListFragmentBinding
@@ -72,7 +73,10 @@ class NoticeFragment : Fragment(),
     @SuppressLint("ClickableViewAccessibility")
     private fun initListeners() {
         binding.btnRoute.setOnClickListener {
-            fragmentListenerCallback?.showMapActivity(null, null)
+            fragmentListenerCallback?.showMapActivity(
+                notice?.residenceAdress,
+                notice?.destinationAdress
+            )
         }
 
         binding.ivShowOnMapDestination.setOnClickListener {
@@ -90,7 +94,7 @@ class NoticeFragment : Fragment(),
 
         binding.btnSave.setOnClickListener {
             if (notice != null && position != null) {
-                initNotice()
+                initNotice(true)
                 clickListener.onSave(notice!!, position!!)
             }
         }
@@ -129,7 +133,7 @@ class NoticeFragment : Fragment(),
             }
 
             override fun afterTextChanged(p0: Editable?) {
-                initNotice()
+                initNotice(checkNetworkConnectivity(requireActivity()))
             }
 
         }
@@ -256,7 +260,7 @@ class NoticeFragment : Fragment(),
 
     }
 
-    override fun initNotice() {
+    override fun initNotice(withInternet: Boolean) {
 
         notice?.fio = et_fio.text.toString()
         notice?.date = et_date.text.toString()
@@ -268,11 +272,31 @@ class NoticeFragment : Fragment(),
         notice?.phoneNumber = et_phone.text.toString()
         val address = RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address
         val editText = RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) as EditText
-        if (editText.tag == "address_residence") {
-            notice?.residenceAdress?.location = address.location
+        // Init location
+        if (withInternet) {
+            if (editText.tag == "address_residence") {
+                notice?.residenceAdress?.location = address.location
+            } else {
+                notice?.destinationAdress?.location = address.location
+            }
         } else {
-            notice?.destinationAdress?.location = address.location
+            if (editText.tag == "address_residence") {
+                notice?.residenceAdress?.location = emptyLocation()
+            } else {
+                notice?.destinationAdress?.location = emptyLocation()
+            }
         }
+
+        if (notice?.destinationAdress?.location != null &&
+            notice?.residenceAdress?.location != null &&
+            notice?.residenceAdress?.location!!.longitude != 0.0 &&
+            notice?.residenceAdress?.location!!.latitude != 0.0
+        ) {
+            btn_route.visible(500)
+        } else {
+            btn_route.gone(500)
+        }
+
         RememberData.forgetAll()
 
         log("Notice: $notice")
@@ -293,7 +317,7 @@ class NoticeFragment : Fragment(),
             this.notice!!.date = "$dayResult.$monthResult.$year"
             binding.routeNotice?.date = notice!!.date
             binding.etDate.setText(binding.routeNotice?.date)
-            initNotice()
+            initNotice(true)
         } catch (e: Exception) {
             log(e)
         }
@@ -321,7 +345,7 @@ class NoticeFragment : Fragment(),
                 }
 
             }
-            initNotice()
+            initNotice(true)
         } catch (e: Exception) {
             log(e)
         }

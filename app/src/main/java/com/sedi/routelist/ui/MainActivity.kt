@@ -282,7 +282,9 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
                             RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address
                         currentEditText.setText(currentAdress.address)
                         try {
-                            (pagerAdapter?.getItem(pagerAdapter!!.noticeFragmentHelper.currentPosition - 1) as FragmentListener).initNotice()
+                            (pagerAdapter?.getItem(pagerAdapter!!.noticeFragmentHelper.currentPosition - 1) as FragmentListener).initNotice(
+                                true
+                            )
                         } catch (e: ClassCastException) {
                             onError(e)
                         } catch (e: Exception) {
@@ -300,7 +302,9 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
                         RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) as EditText
                     currentEditText.setText((RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address).address)
                     try {
-                        (pagerAdapter?.getItem(pagerAdapter!!.noticeFragmentHelper.currentPosition - 1) as FragmentListener).initNotice()
+                        (pagerAdapter?.getItem(pagerAdapter!!.noticeFragmentHelper.currentPosition - 1) as FragmentListener).initNotice(
+                            true
+                        )
                     } catch (e: ClassCastException) {
                         onError(e)
                     } catch (e: Exception) {
@@ -314,7 +318,7 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
     interface FragmentListener {
         fun updateUI(hasNetwork: Boolean)
         fun pastNotice(notice: Notice)
-        fun initNotice()
+        fun initNotice(hasNetwork: Boolean)
     }
 
     override fun onRequestPermissionsResult(
