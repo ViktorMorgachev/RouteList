@@ -17,10 +17,21 @@ fun convertNoticeItemToRoomModel(notice: Notice) =
         reason = notice.reason
         exitTime = notice.exitTime
         resetingTime = notice.resetingTime
+
+        val residenceLatitude =
+            if (notice.residenceAdress.location == null) "" else notice.residenceAdress.location!!.latitude.toString()
+        val residenceLongtude =
+            if (notice.residenceAdress.location == null) "" else notice.residenceAdress.location!!.longitude.toString()
+
+        val destinationLatitude =
+            if (notice.destinationAdress.location == null) "" else notice.destinationAdress.location!!.latitude.toString()
+        val destinationLongtude =
+            if (notice.destinationAdress.location == null) "" else notice.destinationAdress.location!!.longitude.toString()
+
         residenceAdress =
-            "${notice.residenceAdress.address}/${notice.residenceAdress.location?.latitude}/${notice.residenceAdress.location?.longitude}"
+            "${notice.residenceAdress.address}/${residenceLatitude}/${residenceLongtude}"
         destinationAdress =
-            "${notice.destinationAdress.address}/${notice.destinationAdress.location?.latitude}/${notice.destinationAdress.location?.longitude}"
+            "${notice.destinationAdress.address}/${destinationLatitude}/${destinationLongtude}"
     }
 
 fun convertRoomModelToNotice(noticeRoomModel: NoticeRoomModel): Notice {

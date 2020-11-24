@@ -281,16 +281,14 @@ class NoticeFragment : Fragment(),
             }
         } else {
             if (editText.tag == "address_residence") {
-                notice?.residenceAdress?.location = emptyLocation()
+                notice?.residenceAdress?.location = null
             } else {
-                notice?.destinationAdress?.location = emptyLocation()
+                notice?.destinationAdress?.location = null
             }
         }
 
         if (notice?.destinationAdress?.location != null &&
-            notice?.residenceAdress?.location != null &&
-            notice?.residenceAdress?.location!!.longitude != 0.0 &&
-            notice?.residenceAdress?.location!!.latitude != 0.0
+            notice?.residenceAdress?.location != null
         ) {
             btn_route.visible(500)
         } else {

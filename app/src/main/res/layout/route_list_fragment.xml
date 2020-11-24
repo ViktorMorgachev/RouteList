@@ -191,7 +191,7 @@
 
                 <EditText
                     android:id="@+id/et_destination_adress"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:hint="@string/destination_adress2"
@@ -202,6 +202,7 @@
                     android:tag="address_destination"
                     android:text="@{routeNotice.destinationAdress.address}"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/iv_show_on_map_destination"
                     app:layout_constraintTop_toBottomOf="@id/et_destination_adress" />
 

@@ -110,10 +110,10 @@ object MapService {
                     if (addresses.isNotEmpty()) {
                         val address: Address = Address().apply {
                             address = addresses[0].display_name
-                            location.longitude = addresses[0].lon.toDouble()
-                            location.latitude = addresses[0].lat.toDouble()
+                            location =
+                                LatLng(addresses[0].lat.toDouble(), addresses[0].lon.toDouble())
                         }
-                        if ((address.location.latitude != 0.0 && address.location.longitude != 0.0) && address.address.isNotEmpty())
+                        if ((address.location != null) && address.address.isNotEmpty())
                             iActionResult.result(address, null)
                     }
                 } catch (e: Exception) {

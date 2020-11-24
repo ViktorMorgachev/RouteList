@@ -1,5 +1,7 @@
 package com.sedi.routelist.models
 
+import com.huawei.hms.maps.model.LatLng
+
 
 fun getAddressFromString(adress: String): String {
     val values = adress.split("/")
@@ -15,22 +17,22 @@ fun addressTransformation(noticeRoomModel: NoticeRoomModel, notice: Notice) {
     val residenceValues = residenceAdress.split("/")
     val destinationValues = destinationAdress.split("/")
 
-    if (residenceAdress.isNotEmpty()){
+    if (residenceAdress.isNotEmpty()) {
         notice.residenceAdress.address = residenceValues[0]
     }
 
-    if (destinationAdress.isNotEmpty()){
+    if (destinationAdress.isNotEmpty()) {
         notice.destinationAdress.address = destinationValues[0]
     }
 
-    if (destinationValues.size == 3){
-        notice.destinationAdress.location.latitude = destinationValues[1].toDouble()
-        notice.destinationAdress.location.longitude = destinationValues[2].toDouble()
+    if (destinationValues.size == 3) {
+        notice.destinationAdress.location =
+            LatLng(destinationValues[1].toDouble(), destinationValues[2].toDouble())
     }
 
-    if (residenceValues.size == 3){
-        notice.residenceAdress.location.latitude = residenceValues[1].toDouble()
-        notice.residenceAdress.location.longitude = residenceValues[2].toDouble()
+    if (residenceValues.size == 3) {
+        notice.residenceAdress.location =
+            LatLng(residenceAdress[1].toDouble(), residenceAdress[2].toDouble())
     }
 
 }

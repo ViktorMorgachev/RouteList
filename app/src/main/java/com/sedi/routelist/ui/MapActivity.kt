@@ -8,12 +8,12 @@ import com.huawei.hms.maps.CameraUpdateFactory
 import com.huawei.hms.maps.HuaweiMap
 import com.huawei.hms.maps.MapsInitializer
 import com.huawei.hms.maps.OnMapReadyCallback
-import com.huawei.hms.maps.model.LatLng
-import com.huawei.hms.maps.model.Polyline
+import com.huawei.hms.maps.model.*
 import com.huawei.hms.site.api.model.Site
 import com.huawei.hms.site.widget.SearchIntent
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
+import com.sedi.routelist.backgrounds.LocationManager
 import com.sedi.routelist.commons.gone
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.commons.visible
@@ -33,7 +33,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     private var hMap: HuaweiMap? = null
     private var mapMode: Mode = Mode.GET_ROUTE
     private var currentAddress: Address? = null
-    private val mPolylines: List<Polyline> = ArrayList()
+    private val points: ArrayList<Marker> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,6 +86,26 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     }
 
 
+    fun addPoint(address: Address) {
+        var marker = points.find { it.position == address.location }
+        marker?.let {
+            marker!!.remove()
+        }
+        val options = MarkerOptions()
+            .position(address.location)
+            .title(address.address)
+            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location))
+
+        marker = hMap!!.addMarker(options)
+
+        if (!points.contains(marker)) {
+            points.add(marker)
+        }
+
+
+    }
+
+
     override fun onMapReady(map: HuaweiMap) {
         //get map instance in a callback method
 
@@ -95,6 +115,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         hMap!!.setLanguage(MyApplication.language)
         hMap!!.setOnCameraIdleListener(this)
         hMap!!.setOnMapClickListener(this)
+        hMap!!.setMarkersClustering(true)
         log("onMapReady")
 
         if (mapMode == Mode.GET_POINT) {
@@ -104,15 +125,50 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                 tv_address.text = currentAddress!!.address
                 // Отключаем слушатель на время
                 removeMapIdleListenerForTimeMilliss(600)
-                onMapClick(currentAddress!!.location)
+                if (currentAddress!!.location == null) {
+                    onMapClick(LocationManager.getLastLocation())
+                } else
+                    onMapClick(currentAddress!!.location)
             }
         } else {
-            // TODO установка стандартных указателей на карту и запрос на построение маршрута
+            log("AdressFrom: $addresFrom AddressTo: $addresTo")
+
+
             if (addresFrom != null && addresTo != null) {
-                if (addresFrom!!.location.latitude != 0.0 && addresTo!!.location.latitude != 0.0)
-                    getRoute(RouteType.Drive, addresFrom!!.location, addresTo!!.location)
+                if (addresFrom!!.location != null) {
+                    addPoint(addresFrom!!)
+                    addPoint(addresTo!!)
+                    onMapClick(addresFrom!!.location)
+                    //onCameraBounds(addresFrom!!.location, addresTo!!.location)
+                    onCameraMoveZoom(13f, addresFrom!!.location!!)
+                    getRoute(RouteType.Drive, addresFrom!!.location!!, addresTo!!.location!!)
+                }
             }
 
+        }
+
+    }
+
+    private fun onCameraBounds(location: LatLng, location1: LatLng, padding: Int = 100) {
+
+        if (location.latitude < location1.latitude) {
+            hMap!!.animateCamera(
+                CameraUpdateFactory.newLatLngBounds(
+                    LatLngBounds(
+                        location,
+                        location1
+                    ), padding
+                )
+            )
+        } else {
+            hMap!!.animateCamera(
+                CameraUpdateFactory.newLatLngBounds(
+                    LatLngBounds(
+                        location1,
+                        location
+                    ), padding
+                )
+            )
         }
 
     }
@@ -190,6 +246,10 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         }
     }
 
+    private fun onCameraMoveZoom(zoom: Float, location: LatLng) {
+        hMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(location, zoom))
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (SearchIntent.SEARCH_REQUEST_CODE == requestCode) {
@@ -199,13 +259,15 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                     currentAddress =
                         Address(site.formatAddress, LatLng(site.location.lat, site.location.lng))
                     log("currentAddress: $currentAddress")
+
+                    LocationManager.setLastLocation(LatLng(site.location.lat, site.location.lng))
                     removeMapListener()
                     hMap?.animateCamera(
                         CameraUpdateFactory.newLatLngZoom(
                             LatLng(
                                 site.location.lat,
                                 site.location.lng
-                            ), 12f
+                            ), 14f
                         ), object : HuaweiMap.CancelableCallback {
                             override fun onFinish() {
                                 hMap?.setOnCameraIdleListener(this@MapActivity)
