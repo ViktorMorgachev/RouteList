@@ -85,6 +85,36 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         mapView.getMapAsync(this)
     }
 
+    private fun init() {
+        if (mapMode == Mode.GET_POINT) {
+            if (currentAddress != null) {
+
+                log("CurrentAddress: $currentAddress")
+                tv_address.text = currentAddress!!.address
+                // Отключаем слушатель на время
+                removeMapIdleListenerForTimeMilliss(600)
+                if (currentAddress!!.location == null) {
+                    onMapClick(LocationManager.getLastLocation())
+                } else
+                    onMapClick(currentAddress!!.location)
+            }
+        } else {
+            log("AdressFrom: $addresFrom AddressTo: $addresTo")
+
+            if (addresFrom != null && addresTo != null) {
+                if (addresFrom!!.location != null) {
+                    addPoint(addresFrom!!)
+                    addPoint(addresTo!!)
+                    onMapClick(addresFrom!!.location)
+                    //onCameraBounds(addresFrom!!.location, addresTo!!.location)
+                    onCameraMoveZoom(13f, addresFrom!!.location!!)
+                    getRoute(RouteType.Drive, addresFrom!!.location!!, addresTo!!.location!!)
+                }
+            }
+
+        }
+    }
+
 
     fun addPoint(address: Address) {
         var marker = points.find { it.position == address.location }
@@ -118,34 +148,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         hMap!!.setMarkersClustering(true)
         log("onMapReady")
 
-        if (mapMode == Mode.GET_POINT) {
-            if (currentAddress != null) {
+        init()
 
-                log("CurrentAddress: $currentAddress")
-                tv_address.text = currentAddress!!.address
-                // Отключаем слушатель на время
-                removeMapIdleListenerForTimeMilliss(600)
-                if (currentAddress!!.location == null) {
-                    onMapClick(LocationManager.getLastLocation())
-                } else
-                    onMapClick(currentAddress!!.location)
-            }
-        } else {
-            log("AdressFrom: $addresFrom AddressTo: $addresTo")
-
-
-            if (addresFrom != null && addresTo != null) {
-                if (addresFrom!!.location != null) {
-                    addPoint(addresFrom!!)
-                    addPoint(addresTo!!)
-                    onMapClick(addresFrom!!.location)
-                    //onCameraBounds(addresFrom!!.location, addresTo!!.location)
-                    onCameraMoveZoom(13f, addresFrom!!.location!!)
-                    getRoute(RouteType.Drive, addresFrom!!.location!!, addresTo!!.location!!)
-                }
-            }
-
-        }
 
     }
 

@@ -31,14 +31,15 @@ object MapService {
         urlBuilder.append(routeType.api).append("?key=${MyApplication.api_key}")
 
         val jsonObject = JSONObject().apply {
-            put("destination", JSONObject().apply {
-                put("lat", latLngTo.latitude)
-                put("lng", latLngTo.longitude)
-            })
             put("origin", JSONObject().apply {
-                put("lat", latLngFrom.latitude)
                 put("lng", latLngFrom.longitude)
+                put("lat", latLngFrom.latitude)
             })
+            put("destination", JSONObject().apply {
+                put("lng", latLngTo.longitude)
+                put("lat", latLngTo.latitude)
+            })
+
         }
 
         val body: RequestBody = jsonObject.toString().toRequestBody(JSON)
@@ -48,7 +49,7 @@ object MapService {
             .post(body)
             .build()
 
-        log("Request: URL $urlBuilder")
+        log("Request: URL $urlBuilder data: ${jsonObject.toString()}")
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 log("getRoute: $e", LOG_LEVEL.ERROR)
