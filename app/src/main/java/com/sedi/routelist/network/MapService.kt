@@ -1,6 +1,5 @@
 package com.sedi.routelist.network
 
-import android.app.Application
 import com.google.gson.GsonBuilder
 import com.huawei.hms.maps.model.LatLng
 import com.sedi.routelist.MyApplication
@@ -10,7 +9,6 @@ import com.sedi.routelist.models.Address
 import com.sedi.routelist.network.geocode.reverse.ReverseGeocode
 import com.sedi.routelist.network.geocode.reverse.osm.Addresses
 import com.sedi.routelist.presenters.IActionResult
-import com.sedi.routelist.ui.MapActivity
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -20,7 +18,59 @@ import java.io.IOException
 import java.io.UnsupportedEncodingException
 
 
-object GeocodingService {
+object MapService {
+
+    fun getRoute(
+        routeType: RouteType,
+        latLngFrom: LatLng,
+        latLngTo: LatLng,
+        iActionResult: IActionResult
+    ) {
+        val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val urlBuilder = StringBuilder("https://mapapi.cloud.huawei.com/mapApi/v1/routeService/")
+        urlBuilder.append(routeType.api).append("?key=${MyApplication.api_key}")
+
+        val jsonObject = JSONObject().apply {
+            put("destination", JSONObject().apply {
+                put("lat", latLngTo.latitude)
+                put("lng", latLngTo.longitude)
+            })
+            put("origin", JSONObject().apply {
+                put("lat", latLngFrom.latitude)
+                put("lng", latLngFrom.longitude)
+            })
+        }
+
+        val body: RequestBody = jsonObject.toString().toRequestBody(JSON)
+        val client = OkHttpClient()
+        val request: Request = Request.Builder()
+            .url(urlBuilder.toString())
+            .post(body)
+            .build()
+
+        log("Request: URL $urlBuilder")
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                log("getRoute: $e", LOG_LEVEL.ERROR)
+                iActionResult.result(null, e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                try {
+                    val result = response.body?.string()
+                    log("Result: $result")
+                    val gson = GsonBuilder().create()
+                    //val data = gson.fromJson(result, ReverseGeocode::class.java)
+                    //  iActionResult.result(data, null)
+                } catch (e: Exception) {
+                    iActionResult.result(null, e)
+                }
+
+            }
+        })
+
+    }
+
 
     @Throws(UnsupportedEncodingException::class)
     fun reverseGeocoding(
@@ -126,4 +176,10 @@ object GeocodingService {
 enum class GeoCodingType {
     OpenStreetMap,
     HUAWEI
+}
+
+enum class RouteType(val api: String) {
+    Bicycle("bicycling"),
+    Drive("driving"),
+    Walking("walking")
 }

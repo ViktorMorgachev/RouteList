@@ -334,6 +334,9 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
         val intent = Intent(this, MapActivity::class.java).apply {
             putExtra(MapActivity.KEY_WORK_MODE, Mode.GET_ROUTE.name)
         }
+
+        // По умолчанию на карте строим маршрут, вождения на автомобиле
+        // и даём возможность там сменить построение маршрута
         startActivity(intent)
     }
 

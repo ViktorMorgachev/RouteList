@@ -4,10 +4,13 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import androidx.core.view.isVisible
-import com.huawei.hms.maps.*
+import com.huawei.hms.maps.CameraUpdateFactory
+import com.huawei.hms.maps.HuaweiMap
+import com.huawei.hms.maps.MapsInitializer
+import com.huawei.hms.maps.OnMapReadyCallback
 import com.huawei.hms.maps.model.LatLng
+import com.huawei.hms.maps.model.Polyline
 import com.huawei.hms.site.api.model.Site
-import com.huawei.hms.site.widget.SearchFilter
 import com.huawei.hms.site.widget.SearchIntent
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
@@ -16,7 +19,8 @@ import com.sedi.routelist.commons.log
 import com.sedi.routelist.commons.visible
 import com.sedi.routelist.models.Address
 import com.sedi.routelist.network.GeoCodingType
-import com.sedi.routelist.network.GeocodingService
+import com.sedi.routelist.network.MapService
+import com.sedi.routelist.network.RouteType
 import com.sedi.routelist.network.geocode.reverse.ReverseGeocode
 import com.sedi.routelist.presenters.IActionResult
 import kotlinx.android.synthetic.main.huawei_map_layout.*
@@ -29,6 +33,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     private var hMap: HuaweiMap? = null
     private var mapMode: Mode = Mode.GET_ROUTE
     private var currentAddress: Address? = null
+    private val mPolylines: List<Polyline> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +67,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
             btn_save_address.setOnClickListener {
                 RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, currentAddress!!)
-                setResult(RESULT_OK, intent);
-                finish();
+                setResult(RESULT_OK, intent)
+                finish()
             }
 
         } else {
@@ -92,16 +97,40 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         hMap!!.setOnMapClickListener(this)
         log("onMapReady")
 
-        if (mapMode == Mode.GET_POINT)
+        if (mapMode == Mode.GET_POINT) {
             if (currentAddress != null) {
 
                 log("CurrentAddress: $currentAddress")
-                tv_address.setText(currentAddress!!.address)
+                tv_address.text = currentAddress!!.address
                 // Отключаем слушатель на время
                 removeMapIdleListenerForTimeMilliss(600)
                 onMapClick(currentAddress!!.location)
             }
+        } else {
+            // TODO установка стандартных указателей на карту и запрос на построение маршрута
+            if (addresFrom != null && addresTo != null) {
+                if (addresFrom!!.location.latitude != 0.0 && addresTo!!.location.latitude != 0.0)
+                    getRoute(RouteType.Drive, addresFrom!!.location, addresTo!!.location)
+            }
 
+        }
+
+    }
+
+    private fun getRoute(routeType: RouteType, addressFirst: LatLng, addressSecond: LatLng) {
+        MapService.getRoute(
+            routeType,
+            addressFirst,
+            addressSecond,
+            iActionResult = object : IActionResult {
+                override fun result(result: Any?, exception: java.lang.Exception?) {
+                    if (result != null) {
+                        log("Result: $result")
+                    } else if (exception != null) {
+                        log(exception)
+                    }
+                }
+            })
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -118,7 +147,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         val location = hMap?.cameraPosition?.target
 
         if (location != null) {
-            GeocodingService.reverseGeocoding(
+            MapService.reverseGeocoding(
                 geoCodingType,
                 location,
                 object : IActionResult {
