@@ -6,7 +6,7 @@ import android.os.Looper
 import com.huawei.hms.location.*
 import com.sedi.routelist.contracts.ILocation
 
-class LocationPresenter : ILocation {
+object LocationPresenter : ILocation {
 
 
     private lateinit var settingsClient: SettingsClient

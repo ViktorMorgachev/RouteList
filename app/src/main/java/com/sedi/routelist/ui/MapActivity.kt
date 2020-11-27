@@ -1,8 +1,10 @@
 package com.sedi.routelist.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
+import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import com.huawei.hms.maps.CameraUpdateFactory
 import com.huawei.hms.maps.HuaweiMap
@@ -14,9 +16,7 @@ import com.huawei.hms.site.widget.SearchIntent
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.backgrounds.LocationManager
-import com.sedi.routelist.commons.gone
-import com.sedi.routelist.commons.log
-import com.sedi.routelist.commons.visible
+import com.sedi.routelist.commons.*
 import com.sedi.routelist.models.Address
 import com.sedi.routelist.network.GeoCodingType
 import com.sedi.routelist.network.RouteType
@@ -24,6 +24,7 @@ import com.sedi.routelist.network.result.geocode.reverse.huawei.GeocodeModelHuaw
 import com.sedi.routelist.network.result.road.huawei.DirectionModel
 import com.sedi.routelist.interfaces.IActionResult
 import com.sedi.routelist.network.NetService
+import com.sedi.routelist.presenters.LocationPresenter
 import com.sedi.routelist.presenters.RoutingPresenter
 import kotlinx.android.synthetic.main.huawei_map_layout.*
 import kotlinx.android.synthetic.main.item_center_map.*
@@ -37,15 +38,13 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     private var currentAddress: Address? = null
     private val points: ArrayList<Marker> = arrayListOf()
 
-    // Presenters
-    private lateinit var routingPresenter: RoutingPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.huawei_map_layout)
         var mapViewBundle: Bundle? = null
 
-        routingPresenter = RoutingPresenter()
+
 
         if (intent.extras?.get(
                 KEY_WORK_MODE
@@ -92,6 +91,12 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     }
 
     private fun init() {
+
+        if (checkLocationPermissions()) {
+            LocationPresenter.initLocation(this)
+            LocationPresenter.requestLocationUpdate()
+        }
+
         if (mapMode == Mode.GET_POINT) {
             if (currentAddress != null) {
 
@@ -114,11 +119,42 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                     onMapClick(addresFrom!!.location)
                     //onCameraBounds(addresFrom!!.location, addresTo!!.location)
                     onCameraMoveZoom(13f, addresFrom!!.location!!)
-                    getRoute(RouteType.Drive, addresFrom!!.location!!, addresTo!!.location!!)
+                    RoutingPresenter.getDirections(RouteType.Walking,
+                        addresFrom!!.location!!,
+                        addresTo!!.location!!,
+                        iActionResult = object : IActionResult {
+                            override fun result(result: Any?, exception: java.lang.Exception?) {
+                                if (result != null) {
+                                    if (result is DirectionModel) {
+                                        log("Result: $result")
+                                    }
+                                } else if (exception != null) {
+                                    log(exception)
+                                }
+                            }
+                        })
                 }
             }
 
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == Activity.RESULT_OK && requestCode == KEY_REQUEST_LOCATION_PERMISSION) {
+            LocationPresenter.initLocation(this)
+            LocationPresenter.requestLocationUpdate()
+        }
+    }
+
+    fun checkLocationPermissions(): Boolean {
+        return if (!checkLocationPermissions(this, getLocationPermissions())) {
+            ActivityCompat.requestPermissions(this, getLocationPermissions(), 1)
+            false
+        } else true
     }
 
 
@@ -132,7 +168,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
             .title(address.address)
             .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location))
 
-        marker = hMap!!.addMarker(options)
+        marker = hMap.addMarker(options)
 
         if (!points.contains(marker)) {
             points.add(marker)
@@ -183,23 +219,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
     }
 
-    private fun getRoute(routeType: RouteType, addressFirst: LatLng, addressSecond: LatLng) {
-        NetService.getDirection(
-            routeType,
-            addressFirst,
-            addressSecond,
-            iActionResult = object : IActionResult {
-                override fun result(result: Any?, exception: java.lang.Exception?) {
-                    if (result != null) {
-                        if (result is DirectionModel) {
-                            log("Result: $result")
-                        }
-                    } else if (exception != null) {
-                        log(exception)
-                    }
-                }
-            })
-    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -270,10 +289,18 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                 if (searchIntent != null) {
                     val site: Site = searchIntent!!.getSiteFromIntent(data)
                     currentAddress =
-                        Address(site.formatAddress, LatLng(site.location.lat, site.location.lng))
+                        Address(
+                            site.formatAddress,
+                            LatLng(site.location.lat, site.location.lng)
+                        )
                     log("currentAddress: $currentAddress")
 
-                    LocationManager.setLastLocation(LatLng(site.location.lat, site.location.lng))
+                    LocationManager.setLastLocation(
+                        LatLng(
+                            site.location.lat,
+                            site.location.lng
+                        )
+                    )
                     removeMapListener()
                     hMap.animateCamera(
                         CameraUpdateFactory.newLatLngZoom(
@@ -341,6 +368,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
     companion object {
         const val KEY_REQUEST_CODE_GET_POINT = 2
+        const val KEY_REQUEST_LOCATION_PERMISSION = 3
         const val KEY_WORK_MODE = "KEY_WORK_MODE"
         private var addresFrom: Address? = null
         private var addresTo: Address? = null
