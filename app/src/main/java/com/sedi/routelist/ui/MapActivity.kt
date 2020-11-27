@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import com.huawei.hms.maps.CameraUpdateFactory
@@ -15,11 +16,12 @@ import com.huawei.hms.site.api.model.Site
 import com.huawei.hms.site.widget.SearchIntent
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
+import com.sedi.routelist.adapters.ItemRoadType
 import com.sedi.routelist.backgrounds.LocationManager
 import com.sedi.routelist.commons.*
+import com.sedi.routelist.enums.GeoCodingType
+import com.sedi.routelist.enums.RouteType
 import com.sedi.routelist.models.Address
-import com.sedi.routelist.network.GeoCodingType
-import com.sedi.routelist.network.RouteType
 import com.sedi.routelist.network.result.geocode.reverse.huawei.GeocodeModelHuawei
 import com.sedi.routelist.network.result.road.huawei.DirectionModel
 import com.sedi.routelist.interfaces.IActionResult
@@ -37,6 +39,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     private var mapMode: Mode = Mode.GET_ROUTE
     private var currentAddress: Address? = null
     private val points: ArrayList<Marker> = arrayListOf()
+    private lateinit var itemRoadType: ItemRoadType
+    private val geoCodingType = GeoCodingType.OpenStreetMap
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,16 +49,30 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         var mapViewBundle: Bundle? = null
 
 
-
         if (intent.extras?.get(
                 KEY_WORK_MODE
             ) == Mode.GET_POINT.name
         ) {
-            panel_map_center.visible()
             mapMode = Mode.GET_POINT
-
             currentAddress = RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address
+        } else {
+            mapMode = Mode.GET_ROUTE
+        }
 
+        if (savedInstanceState != null)
+            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
+
+        MapsInitializer.setApiKey(resources.getString(R.string.api_key))
+        mapView.onCreate(mapViewBundle)
+
+        mapView.getMapAsync(this)
+    }
+
+    private fun init() {
+
+        if (mapMode == Mode.GET_POINT) {
+            panel_map_center.visible()
+            panel_change_road.gone()
             iv_map_center.setOnClickListener {
                 if (!ll_address_info.isVisible) {
                     ll_address_info.visible(500)
@@ -75,22 +93,36 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                 setResult(RESULT_OK, intent)
                 finish()
             }
-
         } else {
-            mapMode = Mode.GET_ROUTE
             panel_map_center.gone()
+            panel_change_road.visible()
+
+            itemRoadType = ItemRoadType(
+                this,
+                findViewById<ConstraintLayout>(R.id.change_road_root),
+                object : ItemRoadType.ISelectedTypeListener {
+                    override fun onTypeSelected(type: RouteType) {
+                        RoutingPresenter.getDirections(type, addresFrom!!.location!!,
+                            addresTo!!.location!!,
+                            iActionResult = object : IActionResult {
+                                override fun result(result: Any?, exception: java.lang.Exception?) {
+                                    if (result != null) {
+                                        if (result is DirectionModel) {
+                                            log("Result: $result")
+                                        }
+                                    } else if (exception != null) {
+                                        log(exception)
+                                    }
+                                }
+                            })
+                    }
+
+                })
+            itemRoadType.changeTittle(this, RoutingPresenter.currentRouteType)
+
         }
 
-        if (savedInstanceState != null)
-            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
 
-        MapsInitializer.setApiKey(resources.getString(R.string.api_key))
-        mapView.onCreate(mapViewBundle)
-
-        mapView.getMapAsync(this)
-    }
-
-    private fun init() {
 
         if (checkLocationPermissions()) {
             LocationPresenter.initLocation(this)
@@ -119,7 +151,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                     onMapClick(addresFrom!!.location)
                     //onCameraBounds(addresFrom!!.location, addresTo!!.location)
                     onCameraMoveZoom(13f, addresFrom!!.location!!)
-                    RoutingPresenter.getDirections(RouteType.Walking,
+                    RoutingPresenter.getDirections(
+                        RoutingPresenter.currentRouteType,
                         addresFrom!!.location!!,
                         addresTo!!.location!!,
                         iActionResult = object : IActionResult {
@@ -231,7 +264,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     }
 
     override fun onCameraIdle() {
-        val location = hMap?.cameraPosition?.target
+        val location = hMap.cameraPosition?.target
 
         if (location != null) {
             NetService.getAddress(
@@ -373,7 +406,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         private var addresFrom: Address? = null
         private var addresTo: Address? = null
         private const val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
-        private val geoCodingType = GeoCodingType.OpenStreetMap
         fun init(
             addressFirst: Address?,
             addressSecond: Address?

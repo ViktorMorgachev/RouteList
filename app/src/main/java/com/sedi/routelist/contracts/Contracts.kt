@@ -3,10 +3,9 @@ package com.sedi.routelist.contracts
 import android.content.Context
 import android.location.Location
 import com.huawei.hms.maps.model.LatLng
+import com.sedi.routelist.enums.GeoCodingType
+import com.sedi.routelist.enums.RouteType
 import com.sedi.routelist.interfaces.IActionResult
-import com.sedi.routelist.network.GeoCodingType
-import com.sedi.routelist.network.RouteType
-
 interface ILocation {
     fun initLocation(context: Context)
     fun requestLocationUpdate()

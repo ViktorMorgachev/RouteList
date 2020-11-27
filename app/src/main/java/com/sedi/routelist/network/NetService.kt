@@ -5,6 +5,8 @@ import com.huawei.hms.maps.model.LatLng
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.commons.LOG_LEVEL
 import com.sedi.routelist.commons.log
+import com.sedi.routelist.enums.GeoCodingType
+import com.sedi.routelist.enums.RouteType
 import com.sedi.routelist.models.Address
 import com.sedi.routelist.network.result.geocode.reverse.huawei.GeocodeModelHuawei
 import com.sedi.routelist.network.result.geocode.reverse.osm.Addresses
@@ -172,13 +174,5 @@ object NetService : IServices {
     }
 }
 
-enum class GeoCodingType {
-    OpenStreetMap,
-    HUAWEI
-}
 
-enum class RouteType(val api: String) {
-    Bicycle("bicycling"),
-    Drive("driving"),
-    Walking("walking")
-}
+

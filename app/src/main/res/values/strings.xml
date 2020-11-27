@@ -32,4 +32,11 @@
 
     <string name="input_address">Input address</string>
 
+
+    <string name="walk">By Walk</string>
+    <string name="drive">By Drive</string>
+    <string name="bicycle">By Bicycle</string>
+    <string name="select_route_type">Select Route Type</string>
+
+
 </resources>

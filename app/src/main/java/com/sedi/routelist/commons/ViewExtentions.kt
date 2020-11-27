@@ -6,6 +6,7 @@ import android.os.AsyncTask
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.ViewCompat
+import com.sedi.routelist.R
 import kotlinx.android.synthetic.main.route_list_fragment.*
 
 fun showToast(activity: Activity, text: String, duration: Int = Toast.LENGTH_LONG) {
@@ -58,6 +59,38 @@ fun View.gone(duration: Long = 500L) {
         Thread.sleep(duration + 500)
         view.post {
             gone()
+        }
+    }
+}
+
+fun View.rotate180(duration: Long = 500L) {
+    val view = this
+    animate().apply {
+        rotation(0f)
+        rotationBy(180f)
+        setDuration(duration)
+    }.start()
+
+    AsyncTask.execute {
+        Thread.sleep(duration + 500)
+        view.post {
+            view.setBackgroundResource(R.drawable.ic_arrow_drop_up)
+        }
+    }
+}
+
+fun View.rotate0(duration: Long = 500L) {
+    val view = this
+    animate().apply {
+        rotation(0f)
+        rotationBy(180f)
+        setDuration(duration)
+    }.start()
+
+    AsyncTask.execute {
+        Thread.sleep(duration + 500)
+        view.post {
+            view.setBackgroundResource(R.drawable.ic_arrow_drop_down)
         }
     }
 }
