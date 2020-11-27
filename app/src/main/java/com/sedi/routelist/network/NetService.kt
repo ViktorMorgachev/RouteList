@@ -6,9 +6,10 @@ import com.sedi.routelist.MyApplication
 import com.sedi.routelist.commons.LOG_LEVEL
 import com.sedi.routelist.commons.log
 import com.sedi.routelist.models.Address
-import com.sedi.routelist.network.geocode.reverse.ReverseGeocode
-import com.sedi.routelist.network.geocode.reverse.osm.Addresses
-import com.sedi.routelist.presenters.IActionResult
+import com.sedi.routelist.network.result.geocode.reverse.huawei.GeocodeModelHuawei
+import com.sedi.routelist.network.result.geocode.reverse.osm.Addresses
+import com.sedi.routelist.network.result.road.huawei.DirectionModel
+import com.sedi.routelist.interfaces.IActionResult
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -18,9 +19,9 @@ import java.io.IOException
 import java.io.UnsupportedEncodingException
 
 
-object MapService {
+object NetService : IServices {
 
-    fun getRoute(
+    override fun getDirection(
         routeType: RouteType,
         latLngFrom: LatLng,
         latLngTo: LatLng,
@@ -61,20 +62,17 @@ object MapService {
                     val result = response.body?.string()
                     log("Result: $result")
                     val gson = GsonBuilder().create()
-                    //val data = gson.fromJson(result, ReverseGeocode::class.java)
-                    //  iActionResult.result(data, null)
+                    val data = gson.fromJson(result, DirectionModel::class.java)
+                    iActionResult.result(data, null)
                 } catch (e: Exception) {
                     iActionResult.result(null, e)
                 }
 
             }
         })
-
     }
 
-
-    @Throws(UnsupportedEncodingException::class)
-    fun reverseGeocoding(
+    override fun getAddress(
         geoCodingType: GeoCodingType,
         latLng: LatLng,
         iActionResult: IActionResult
@@ -86,7 +84,7 @@ object MapService {
         }
     }
 
-    fun reverseOSMGeocoding(latLng: LatLng, iActionResult: IActionResult) {
+    private fun reverseOSMGeocoding(latLng: LatLng, iActionResult: IActionResult) {
         val url =
             "https://nominatim.openstreetmap.org/search?format=json&accept-language=${MyApplication.language}&q=${latLng.latitude},${latLng.longitude}&poligon=1&addressdetails=1"
         val client = OkHttpClient()
@@ -95,7 +93,7 @@ object MapService {
             .get()
             .build()
 
-        log("Request: URL " + "$url |")
+        log("Request: URL $url |")
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 log("ReverseGeocoding: $e", LOG_LEVEL.ERROR)
@@ -125,7 +123,7 @@ object MapService {
         })
     }
 
-    fun reverseHuaweiGeocoding(latLng: LatLng, iActionResult: IActionResult) {
+    private fun reverseHuaweiGeocoding(latLng: LatLng, iActionResult: IActionResult) {
         val JSON: MediaType? = "application/json; charset=utf-8".toMediaTypeOrNull();
         val json = JSONObject()
         val location = JSONObject()
@@ -163,7 +161,7 @@ object MapService {
                     val result = response.body?.string()
                     log("Result: $result")
                     val gson = GsonBuilder().create()
-                    val data = gson.fromJson(result, ReverseGeocode::class.java)
+                    val data = gson.fromJson(result, GeocodeModelHuawei::class.java)
                     iActionResult.result(data, null)
                 } catch (e: Exception) {
                     iActionResult.result(null, e)

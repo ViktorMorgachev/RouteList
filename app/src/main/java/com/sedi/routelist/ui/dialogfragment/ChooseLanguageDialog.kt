@@ -3,21 +3,15 @@ package com.sedi.routelist.ui.dialogfragment
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sedi.routelist.R
-import com.sedi.routelist.commons.LOG_LEVEL
-import com.sedi.routelist.commons.log
 import com.sedi.routelist.models.Language
-import com.sedi.routelist.presenters.IAction
+import com.sedi.routelist.interfaces.IAction
 import ru.sedi.customerclient.adapters.LanguageAdapter
 
 class ChooseLanguageDialog(

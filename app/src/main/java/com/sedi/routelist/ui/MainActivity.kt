@@ -20,9 +20,9 @@ import com.sedi.routelist.backgrounds.ConnectivityListener
 import com.sedi.routelist.backgrounds.OnConnectivityInformationChangedListener
 import com.sedi.routelist.commons.*
 import com.sedi.routelist.models.*
-import com.sedi.routelist.presenters.IAction
-import com.sedi.routelist.presenters.IClickListener
-import com.sedi.routelist.presenters.IResultCalback
+import com.sedi.routelist.interfaces.IAction
+import com.sedi.routelist.interfaces.IClickListener
+import com.sedi.routelist.interfaces.IResultCalback
 import com.sedi.routelist.ui.dialogfragment.ChooseLanguageDialog
 import com.sedi.routelist.ui.fragment.FragmentListenerCallback
 import com.sedi.routelist.ui.fragment.NoticeFragment

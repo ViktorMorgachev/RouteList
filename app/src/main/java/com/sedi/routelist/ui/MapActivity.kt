@@ -19,10 +19,12 @@ import com.sedi.routelist.commons.log
 import com.sedi.routelist.commons.visible
 import com.sedi.routelist.models.Address
 import com.sedi.routelist.network.GeoCodingType
-import com.sedi.routelist.network.MapService
 import com.sedi.routelist.network.RouteType
-import com.sedi.routelist.network.geocode.reverse.ReverseGeocode
-import com.sedi.routelist.presenters.IActionResult
+import com.sedi.routelist.network.result.geocode.reverse.huawei.GeocodeModelHuawei
+import com.sedi.routelist.network.result.road.huawei.DirectionModel
+import com.sedi.routelist.interfaces.IActionResult
+import com.sedi.routelist.network.NetService
+import com.sedi.routelist.presenters.RoutingPresenter
 import kotlinx.android.synthetic.main.huawei_map_layout.*
 import kotlinx.android.synthetic.main.item_center_map.*
 
@@ -30,16 +32,20 @@ import kotlinx.android.synthetic.main.item_center_map.*
 class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleListener,
     HuaweiMap.OnMapClickListener {
 
-    private var hMap: HuaweiMap? = null
+    private lateinit var hMap: HuaweiMap
     private var mapMode: Mode = Mode.GET_ROUTE
     private var currentAddress: Address? = null
     private val points: ArrayList<Marker> = arrayListOf()
+
+    // Presenters
+    private lateinit var routingPresenter: RoutingPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.huawei_map_layout)
         var mapViewBundle: Bundle? = null
 
+        routingPresenter = RoutingPresenter()
 
         if (intent.extras?.get(
                 KEY_WORK_MODE
@@ -140,12 +146,12 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         //get map instance in a callback method
 
         hMap = map
-        hMap!!.isMyLocationEnabled = true
-        hMap!!.uiSettings.isMyLocationButtonEnabled = true
-        hMap!!.setLanguage(MyApplication.language)
-        hMap!!.setOnCameraIdleListener(this)
-        hMap!!.setOnMapClickListener(this)
-        hMap!!.setMarkersClustering(true)
+        hMap.isMyLocationEnabled = true
+        hMap.uiSettings.isMyLocationButtonEnabled = true
+        hMap.setLanguage(MyApplication.language)
+        hMap.setOnCameraIdleListener(this)
+        hMap.setOnMapClickListener(this)
+        hMap.setMarkersClustering(true)
         log("onMapReady")
 
         init()
@@ -156,7 +162,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     private fun onCameraBounds(location: LatLng, location1: LatLng, padding: Int = 100) {
 
         if (location.latitude < location1.latitude) {
-            hMap!!.animateCamera(
+            hMap.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
                     LatLngBounds(
                         location,
@@ -165,7 +171,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                 )
             )
         } else {
-            hMap!!.animateCamera(
+            hMap.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
                     LatLngBounds(
                         location1,
@@ -178,14 +184,16 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     }
 
     private fun getRoute(routeType: RouteType, addressFirst: LatLng, addressSecond: LatLng) {
-        MapService.getRoute(
+        NetService.getDirection(
             routeType,
             addressFirst,
             addressSecond,
             iActionResult = object : IActionResult {
                 override fun result(result: Any?, exception: java.lang.Exception?) {
                     if (result != null) {
-                        log("Result: $result")
+                        if (result is DirectionModel) {
+                            log("Result: $result")
+                        }
                     } else if (exception != null) {
                         log(exception)
                     }
@@ -207,14 +215,14 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         val location = hMap?.cameraPosition?.target
 
         if (location != null) {
-            MapService.reverseGeocoding(
+            NetService.getAddress(
                 geoCodingType,
                 location,
                 object : IActionResult {
                     override fun result(result: Any?, exception: Exception?) {
                         if (result != null) {
                             if (geoCodingType == GeoCodingType.HUAWEI) {
-                                val data = result as ReverseGeocode
+                                val data = result as GeocodeModelHuawei
                                 if (data.sites != null && data.sites.isNotEmpty()) {
                                     tv_address.post {
                                         tv_address.text = data.sites[0].formatAddress
@@ -234,7 +242,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                     tv_address.text = data.address
                                 }
                             }
-
+                            if (!ll_address_info.isVisible)
+                                ll_address_info.visible(500)
                         } else if (exception != null) {
                             log(exception)
                         }
@@ -246,12 +255,12 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
     override fun onMapClick(location: LatLng?) {
         if (location != null) {
-            hMap?.animateCamera(CameraUpdateFactory.newLatLng(location))
+            hMap.animateCamera(CameraUpdateFactory.newLatLng(location))
         }
     }
 
     private fun onCameraMoveZoom(zoom: Float, location: LatLng) {
-        hMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(location, zoom))
+        hMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, zoom))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -266,7 +275,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
                     LocationManager.setLastLocation(LatLng(site.location.lat, site.location.lng))
                     removeMapListener()
-                    hMap?.animateCamera(
+                    hMap.animateCamera(
                         CameraUpdateFactory.newLatLngZoom(
                             LatLng(
                                 site.location.lat,
@@ -274,11 +283,11 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                             ), 14f
                         ), object : HuaweiMap.CancelableCallback {
                             override fun onFinish() {
-                                hMap?.setOnCameraIdleListener(this@MapActivity)
+                                hMap.setOnCameraIdleListener(this@MapActivity)
                             }
 
                             override fun onCancel() {
-                                hMap?.setOnCameraIdleListener(this@MapActivity)
+                                hMap.setOnCameraIdleListener(this@MapActivity)
                             }
                         })
                 }
@@ -287,15 +296,15 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     }
 
     private fun removeMapListener() {
-        hMap?.setOnCameraIdleListener { }
+        hMap.setOnCameraIdleListener { }
     }
 
     private fun removeMapIdleListenerForTimeMilliss(duration: Long = 600) {
-        hMap?.setOnCameraIdleListener { }
+        hMap.setOnCameraIdleListener { }
         AsyncTask.execute {
             Thread.sleep(duration)
             runOnUiThread {
-                hMap?.setOnCameraIdleListener(this)
+                hMap.setOnCameraIdleListener(this)
             }
         }
     }

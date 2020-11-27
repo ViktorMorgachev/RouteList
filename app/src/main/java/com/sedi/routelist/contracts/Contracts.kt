@@ -1,0 +1,28 @@
+package com.sedi.routelist.contracts
+
+import android.content.Context
+import android.location.Location
+import com.huawei.hms.maps.model.LatLng
+import com.sedi.routelist.interfaces.IActionResult
+import com.sedi.routelist.network.GeoCodingType
+import com.sedi.routelist.network.RouteType
+
+interface ILocation {
+    fun initLocation(context: Context)
+    fun requestLocationUpdate()
+    fun requestRemoveLocationUpdate()
+    fun getLastKnownLocation(): Location?
+}
+
+interface IRouting {
+    fun getDirections(
+        routeType: RouteType,
+        latLngFrom: LatLng,
+        latLngTo: LatLng,
+        iActionResult: IActionResult
+    )
+}
+
+interface IGeocode {
+    fun reverseGeocode(geoCodingType: GeoCodingType, latLng: LatLng, iActionResult: IActionResult)
+}

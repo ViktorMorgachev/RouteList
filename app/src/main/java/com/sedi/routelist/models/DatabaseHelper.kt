@@ -1,11 +1,10 @@
 package com.sedi.routelist.models
 
 import android.app.Activity
-import com.huawei.hms.maps.model.LatLng
 import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.asynkExecute
-import com.sedi.routelist.presenters.IResultCalback
+import com.sedi.routelist.interfaces.IResultCalback
 
 
 fun convertNoticeItemToRoomModel(notice: Notice) =

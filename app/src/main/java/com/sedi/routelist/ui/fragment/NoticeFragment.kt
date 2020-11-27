@@ -17,13 +17,12 @@ import android.widget.TimePicker
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import com.sedi.routelist.MyApplication
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.*
 import com.sedi.routelist.databinding.RouteListFragmentBinding
 import com.sedi.routelist.models.Address
 import com.sedi.routelist.models.Notice
-import com.sedi.routelist.presenters.IClickListener
+import com.sedi.routelist.interfaces.IClickListener
 import com.sedi.routelist.ui.MainActivity
 import com.sedi.routelist.ui.NoticesPagerAdapter
 import com.sedi.routelist.ui.RememberData

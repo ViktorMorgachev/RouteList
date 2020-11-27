@@ -1,7 +1,6 @@
-package com.sedi.routelist.presenters
+package com.sedi.routelist.interfaces
 
 import com.sedi.routelist.models.Notice
-import com.sedi.routelist.models.NoticeRoomModel
 
 interface IResultCalback {
     fun onError(exception: Exception)

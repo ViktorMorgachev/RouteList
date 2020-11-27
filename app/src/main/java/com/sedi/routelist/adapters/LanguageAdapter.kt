@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sedi.routelist.R
 import com.sedi.routelist.models.Language
 import com.sedi.routelist.models.PrefsManager
-import com.sedi.routelist.presenters.IAction
+import com.sedi.routelist.interfaces.IAction
 
 class LanguageAdapter(
     private val context: Context,
