@@ -15,7 +15,7 @@ data class GeocodeModelOSM(
     val type: String
 )
 
-class Addresses : ArrayList<GeocodeModelOSM>()
+class AddressesOSM : ArrayList<GeocodeModelOSM>()
 
 data class Address(
     val country: String,

@@ -275,7 +275,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                         if (result != null) {
                             if (geoCodingType == GeoCodingType.HUAWEI) {
                                 val data = result as GeocodeModelHuawei
-                                if (data.sites != null && data.sites.isNotEmpty()) {
+                                if (data.sites.isNotEmpty()) {
                                     tv_address.post {
                                         tv_address.text = data.sites[0].formatAddress
                                     }

@@ -9,7 +9,7 @@ import com.sedi.routelist.enums.GeoCodingType
 import com.sedi.routelist.enums.RouteType
 import com.sedi.routelist.models.Address
 import com.sedi.routelist.network.result.geocode.reverse.huawei.GeocodeModelHuawei
-import com.sedi.routelist.network.result.geocode.reverse.osm.Addresses
+import com.sedi.routelist.network.result.geocode.reverse.osm.AddressesOSM
 import com.sedi.routelist.network.result.road.huawei.DirectionModel
 import com.sedi.routelist.interfaces.IActionResult
 import okhttp3.*
@@ -18,7 +18,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.io.UnsupportedEncodingException
 
 
 object NetService : IServices {
@@ -107,7 +106,7 @@ object NetService : IServices {
                     val result = response.body?.string()
                     log("Result: $result")
                     val gson = GsonBuilder().create()
-                    val addresses = gson.fromJson(result, Addresses::class.java) as Addresses
+                    val addresses = gson.fromJson(result, AddressesOSM::class.java) as AddressesOSM
                     if (addresses.isNotEmpty()) {
                         val address: Address = Address().apply {
                             address = addresses[0].display_name
