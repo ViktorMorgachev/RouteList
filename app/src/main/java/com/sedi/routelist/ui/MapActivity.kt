@@ -295,7 +295,9 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                 }
                             }
                             if (!ll_address_info.isVisible)
-                                ll_address_info.visible(500)
+                                ll_address_info.post {
+                                    ll_address_info.visible(500)
+                                }
                         } else if (exception != null) {
                             log(exception)
                         }
