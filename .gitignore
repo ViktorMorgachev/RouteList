@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 /.idea
+/app/google-services.json
+/app/agconnect-services.json
+/app/keys/MyKeys.jks

@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -23,10 +25,10 @@ android {
 
     signingConfigs {
         config {
-            storeFile file('C:\\WorkFolder\\SeDi\\Keys\\MyKeys.jks')
-            storePassword 'ILIKEWRITECODE96'
-            keyPassword 'RouteListPro'
+            storeFile rootProject.file('signkey\\MyKeys.jks')
+            storePassword "ILIKEWRITECODE96"
             keyAlias 'RouteList'
+            keyPassword "RouteListPro"
         }
     }
     buildTypes {
@@ -34,7 +36,6 @@ android {
             signingConfig signingConfigs.config
         }
         release {
-            signingConfig signingConfigs.config
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -54,6 +55,7 @@ android {
     }
 
 }
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
