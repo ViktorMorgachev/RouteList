@@ -1,17 +1,20 @@
 package com.sedi.routelist.presenters
 
 import com.huawei.hms.maps.model.LatLng
-import com.sedi.routelist.commons.log
 import com.sedi.routelist.interfaces.IActionResult
 import com.sedi.routelist.contracts.IRouting
+import com.sedi.routelist.enums.GeoCodingType
 import com.sedi.routelist.enums.RouteType
 import com.sedi.routelist.network.NetService
-import com.sedi.routelist.network.result.road.huawei.DirectionModel
 
 object RoutingPresenter : IRouting {
 
-    var currentRouteType = RouteType.Walking
+    private var lastRequest: (() -> Unit)? = null
+    var routeType = RouteType.Walking
         private set
+    var geoCodingType = GeoCodingType.HUAWEI
+        private set
+
 
     override fun getDirections(
         routeType: RouteType,
@@ -19,12 +22,31 @@ object RoutingPresenter : IRouting {
         latLngTo: LatLng,
         iActionResult: IActionResult
     ) {
-        currentRouteType = routeType
-        NetService.getDirection(
-            routeType,
-            latLngFrom,
-            latLngFrom,
-            iActionResult
-        )
+        this.routeType = routeType
+        lastRequest = {
+            NetService.getDirection(
+                geoCodingType,
+                routeType,
+                latLngFrom,
+                latLngTo,
+                iActionResult
+            )
+        }
+    }
+
+    fun changeGeoCodingType() {
+        geoCodingType = if (geoCodingType == GeoCodingType.HUAWEI) {
+            GeoCodingType.OpenStreetMap
+        } else {
+            GeoCodingType.HUAWEI
+        }
+    }
+
+    fun setRouteType(routeType: RouteType) {
+        this.routeType = routeType
+    }
+
+    fun repeatRequest() {
+        lastRequest?.invoke()
     }
 }

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import com.huawei.hms.maps.CameraUpdateFactory
@@ -27,6 +26,7 @@ import com.sedi.routelist.network.result.geocode.reverse.huawei.GeocodeModelHuaw
 import com.sedi.routelist.network.result.road.huawei.DirectionModel
 import com.sedi.routelist.interfaces.IActionResult
 import com.sedi.routelist.network.NetService
+import com.sedi.routelist.network.result.road.huawei.ErrorResponseHuawei
 import com.sedi.routelist.presenters.LocationPresenter
 import com.sedi.routelist.presenters.RoutingPresenter
 import kotlinx.android.synthetic.main.huawei_map_layout.*
@@ -128,17 +128,32 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                     //onCameraBounds(addresFrom!!.location, addresTo!!.location)
                     onCameraMoveZoom(13f, addresFrom!!.location!!)
                     RoutingPresenter.getDirections(
-                        RoutingPresenter.currentRouteType,
+                        RoutingPresenter.routeType,
                         addresFrom!!.location!!,
                         addresTo!!.location!!,
                         iActionResult = object : IActionResult {
                             override fun result(result: Any?, exception: java.lang.Exception?) {
-                                if (result != null) {
-                                    if (result is DirectionModel) {
-                                        log("Result: $result")
+                                if (RoutingPresenter.geoCodingType == GeoCodingType.HUAWEI) {
+                                    if (result != null) {
+                                        if (result is DirectionModel) {
+                                            log("Result: $result")
+                                        } else {
+                                            if (result is ErrorResponseHuawei) {
+                                                RoutingPresenter.changeGeoCodingType()
+                                                RoutingPresenter.repeatRequest()
+                                            }
+                                        }
+
+                                    } else if (exception != null) {
+                                        log(exception)
                                     }
-                                } else if (exception != null) {
-                                    log(exception)
+                                } else if (RoutingPresenter.geoCodingType == GeoCodingType.OpenStreetMap) {
+                                    if (result != null) {
+                                        // TODO от осм запросы не обрабатываем если ошибка, покажем текст ошибки
+                                        log("Result: $result")
+                                    } else if (exception != null) {
+                                        log(exception)
+                                    }
                                 }
                             }
                         })
@@ -161,19 +176,35 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                         addresTo!!.location!!,
                         iActionResult = object : IActionResult {
                             override fun result(result: Any?, exception: java.lang.Exception?) {
-                                if (result != null) {
-                                    if (result is DirectionModel) {
-                                        log("Result: $result")
+                                if (RoutingPresenter.geoCodingType == GeoCodingType.HUAWEI) {
+                                    if (result != null) {
+                                        if (result is DirectionModel) {
+                                            log("Result: $result")
+                                        } else {
+                                            if (result is ErrorResponseHuawei) {
+                                                RoutingPresenter.changeGeoCodingType()
+                                                RoutingPresenter.repeatRequest()
+                                            }
+                                        }
+                                    } else if (exception != null) {
+                                        log(exception)
                                     }
-                                } else if (exception != null) {
-                                    log(exception)
+                                } else {
+                                    if (RoutingPresenter.geoCodingType == GeoCodingType.OpenStreetMap) {
+                                        if (result != null) {
+                                            // TODO от осм запросы не обрабатываем если ошибка, покажем текст ошибки
+                                            log("Result: $result")
+                                        } else if (exception != null) {
+                                            log(exception)
+                                        }
+                                    }
                                 }
                             }
                         })
                 }
 
             })
-        itemRoadType.changeTittle(this, RoutingPresenter.currentRouteType)
+        itemRoadType.changeTittle(this, RoutingPresenter.routeType)
     }
 
     override fun onRequestPermissionsResult(

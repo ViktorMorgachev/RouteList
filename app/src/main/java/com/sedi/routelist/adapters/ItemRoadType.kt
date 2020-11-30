@@ -32,7 +32,6 @@ class ItemRoadType(context: Context, viewGroup: ViewGroup, listener: ISelectedTy
         }
     private var ivArrow: ImageView = viewGroup.findViewById<ImageView>(R.id.iv_arrow).apply {
         setOnClickListener {
-            log("Arrow rotation: $rotation")
             if (rotation == 180f
             ) {
                 showTypes()

@@ -12,6 +12,7 @@ import com.sedi.routelist.network.result.geocode.reverse.huawei.GeocodeModelHuaw
 import com.sedi.routelist.network.result.geocode.reverse.osm.AddressesOSM
 import com.sedi.routelist.network.result.road.huawei.DirectionModel
 import com.sedi.routelist.interfaces.IActionResult
+import com.sedi.routelist.network.result.road.huawei.ErrorResponseHuawei
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -23,54 +24,73 @@ import java.io.IOException
 object NetService : IServices {
 
     override fun getDirection(
+        geoCodingType: GeoCodingType,
         routeType: RouteType,
         latLngFrom: LatLng,
         latLngTo: LatLng,
         iActionResult: IActionResult
     ) {
-        val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val urlBuilder = StringBuilder("https://mapapi.cloud.huawei.com/mapApi/v1/routeService/")
-        urlBuilder.append(routeType.api).append("?key=${MyApplication.api_key}")
 
-        val jsonObject = JSONObject().apply {
-            put("origin", JSONObject().apply {
-                put("lng", latLngFrom.longitude)
-                put("lat", latLngFrom.latitude)
-            })
-            put("destination", JSONObject().apply {
-                put("lng", latLngTo.longitude)
-                put("lat", latLngTo.latitude)
-            })
+        if (geoCodingType == GeoCodingType.HUAWEI) {
+            val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
+            val urlBuilder =
+                StringBuilder("https://mapapi.cloud.huawei.com/mapApi/v1/routeService/")
+            urlBuilder.append(routeType.api).append("?key=${MyApplication.api_key}")
 
-        }
+            val jsonObject = JSONObject().apply {
+                put("origin", JSONObject().apply {
+                    put("lng", latLngFrom.longitude)
+                    put("lat", latLngFrom.latitude)
+                })
+                put("destination", JSONObject().apply {
+                    put("lng", latLngTo.longitude)
+                    put("lat", latLngTo.latitude)
+                })
 
-        val body: RequestBody = jsonObject.toString().toRequestBody(JSON)
-        val client = OkHttpClient()
-        val request: Request = Request.Builder()
-            .url(urlBuilder.toString())
-            .post(body)
-            .build()
-
-        log("Request: URL $urlBuilder data: ${jsonObject.toString()}")
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                log("getRoute: $e", LOG_LEVEL.ERROR)
-                iActionResult.result(null, e)
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                try {
-                    val result = response.body?.string()
-                    log("Result: $result")
-                    val gson = GsonBuilder().create()
-                    val data = gson.fromJson(result, DirectionModel::class.java)
-                    iActionResult.result(data, null)
-                } catch (e: Exception) {
+            val body: RequestBody = jsonObject.toString().toRequestBody(JSON)
+            val client = OkHttpClient()
+            val request: Request = Request.Builder()
+                .url(urlBuilder.toString())
+                .post(body)
+                .build()
+
+            log("Request: URL $urlBuilder data: ${jsonObject.toString()}")
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    log("getRoute: $e", LOG_LEVEL.ERROR)
                     iActionResult.result(null, e)
                 }
 
-            }
-        })
+                override fun onResponse(call: Call, response: Response) {
+                    if (!response.isSuccessful) {
+                        try {
+                            val result = response.body?.string()
+                            log("Error: $result")
+                            val gson = GsonBuilder().create()
+                            val data = gson.fromJson(result, ErrorResponseHuawei::class.java)
+                            iActionResult.result(data, null)
+                        } catch (e: Exception) {
+                            iActionResult.result(null, e)
+                        }
+                        return
+                    }
+                    try {
+                        val result = response.body?.string()
+                        log("Result: $result")
+                        val gson = GsonBuilder().create()
+                        val data = gson.fromJson(result, DirectionModel::class.java)
+                        iActionResult.result(data, null)
+                    } catch (e: Exception) {
+                        iActionResult.result(null, e)
+                    }
+
+                }
+            })
+        } else {
+
+        }
     }
 
     override fun getAddress(

@@ -61,3 +61,8 @@ data class Step(
     val roadName: String,
     val startLocation: StartLocation
 )
+
+data class ErrorResponseHuawei(
+    val returnCode: String,
+    val returnDesc: String
+)
