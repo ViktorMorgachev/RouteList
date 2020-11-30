@@ -23,6 +23,7 @@ object RoutingPresenter : IRouting {
         iActionResult: IActionResult
     ) {
         this.routeType = routeType
+        this.routeType = routeType
         lastRequest = {
             NetService.getDirection(
                 geoCodingType,
