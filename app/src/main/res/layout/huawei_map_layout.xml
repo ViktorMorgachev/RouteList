@@ -11,19 +11,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/panel_change_road"
-            layout="@layout/item_change_road_type"
-            android:visibility="gone" />
-
         <com.huawei.hms.maps.MapView
             android:id="@+id/mapView"
+            android:background="@color/green"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             map:cameraZoom="9"
             map:mapType="normal"
             map:uiCompass="true"
             map:uiZoomControls="true" />
+
+        <include
+            android:id="@+id/panel_change_road"
+            layout="@layout/item_change_road_type"
+            android:visibility="gone" />
 
         <include
             android:id="@+id/panel_map_center"

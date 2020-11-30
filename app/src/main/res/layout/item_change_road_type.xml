@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:id="@+id/change_road_root"
     android:layout_height="match_parent"
-    android:background="@color/transparent_70_white"
-    android:orientation="vertical">
+    android:background="@color/transparent_70_white">
 
     <LinearLayout
         android:id="@+id/ll_root_tittle"
@@ -42,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@id/ll_root_tittle">
 
         <LinearLayout
@@ -53,6 +52,7 @@
 
             <ImageView
                 android:layout_width="36dp"
+                android:layout_weight="1"
                 android:layout_height="36dp"
                 android:layout_margin="5dp"
                 android:src="@drawable/ic_walk_route" />
@@ -61,7 +61,8 @@
                 android:layout_width="0dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center"
-                android:layout_weight="1"
+                android:layout_weight="4"
+                android:textColor="@android:color/black"
                 android:gravity="center"
                 android:text="@string/walk" />
 
@@ -77,14 +78,16 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_margin="5dp"
+                android:layout_weight="1"
                 android:src="@drawable/ic_bicycle_route" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center"
-                android:layout_weight="1"
+                android:layout_weight="4"
                 android:gravity="center"
+                android:textColor="@android:color/black"
                 android:text="@string/bicycle" />
 
         </LinearLayout>
@@ -99,13 +102,15 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_margin="5dp"
+                android:layout_weight="1"
                 android:src="@drawable/ic_car_route" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center"
-                android:layout_weight="1"
+                android:layout_weight="4"
+                android:textColor="@android:color/black"
                 android:gravity="center"
                 android:text="@string/drive" />
 

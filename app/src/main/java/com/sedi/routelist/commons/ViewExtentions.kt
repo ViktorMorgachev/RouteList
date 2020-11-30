@@ -26,71 +26,83 @@ fun View.visible() {
 }
 
 fun View.visible(duration: Long = 500L) {
-    alpha = 0f
+    isClickable = false
+    scaleX = 0f
+    scaleY = 0f
     visible()
-    ViewCompat.animate(this).setDuration(duration).alphaBy(1f).start()
+    ViewCompat.animate(this).setDuration(duration).scaleX(1f).scaleY(1f).start()
+    AsyncTask.execute {
+        Thread.sleep(duration + 100)
+        post {
+            isClickable = true
+        }
+    }
 }
 
 fun View.invisible(duration: Long = 500L) {
-    val view = this
+    isClickable = false
     animate().apply {
-        scaleXBy(0f)
-        scaleYBy(0f)
+        scaleX(0f)
+        scaleY(0f)
         setDuration(duration)
     }.start()
 
     AsyncTask.execute {
-        Thread.sleep(duration + 500)
-        view.post {
+        Thread.sleep(duration + 100)
+        post {
+            isClickable = true
             invisible()
         }
     }
 }
 
 fun View.gone(duration: Long = 500L) {
-    val view = this
+    isClickable = false
     animate().apply {
-        scaleXBy(0f)
-        scaleYBy(0f)
+        scaleX(0f)
+        scaleY(0f)
         setDuration(duration)
     }.start()
 
     AsyncTask.execute {
-        Thread.sleep(duration + 500)
-        view.post {
+        Thread.sleep(duration + 100)
+        post {
+            isClickable = true
             gone()
         }
     }
 }
 
 fun View.rotate180(duration: Long = 500L) {
-    val view = this
+    isClickable = false
     animate().apply {
-        rotation(0f)
         rotationBy(180f)
+        rotation(0f)
         setDuration(duration)
     }.start()
 
     AsyncTask.execute {
-        Thread.sleep(duration + 500)
-        view.post {
-            view.setBackgroundResource(R.drawable.ic_arrow_drop_up)
+        Thread.sleep(duration + 100)
+        post {
+            isClickable = true
         }
     }
+
 }
 
 fun View.rotate0(duration: Long = 500L) {
-    val view = this
+    isClickable = false
     animate().apply {
-        rotation(0f)
-        rotationBy(180f)
+        rotationBy(0f)
+        rotation(180f)
         setDuration(duration)
     }.start()
 
     AsyncTask.execute {
-        Thread.sleep(duration + 500)
-        view.post {
-            view.setBackgroundResource(R.drawable.ic_arrow_drop_down)
+        Thread.sleep(duration + 100)
+        post {
+            isClickable = true
         }
     }
+
 }

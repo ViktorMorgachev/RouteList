@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
@@ -94,32 +95,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                 finish()
             }
         } else {
-            panel_map_center.gone()
-            panel_change_road.visible()
-
-            itemRoadType = ItemRoadType(
-                this,
-                findViewById<ConstraintLayout>(R.id.change_road_root),
-                object : ItemRoadType.ISelectedTypeListener {
-                    override fun onTypeSelected(type: RouteType) {
-                        RoutingPresenter.getDirections(type, addresFrom!!.location!!,
-                            addresTo!!.location!!,
-                            iActionResult = object : IActionResult {
-                                override fun result(result: Any?, exception: java.lang.Exception?) {
-                                    if (result != null) {
-                                        if (result is DirectionModel) {
-                                            log("Result: $result")
-                                        }
-                                    } else if (exception != null) {
-                                        log(exception)
-                                    }
-                                }
-                            })
-                    }
-
-                })
-            itemRoadType.changeTittle(this, RoutingPresenter.currentRouteType)
-
+            showPanelChangeRoute()
         }
 
 
@@ -170,6 +146,34 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
             }
 
         }
+    }
+
+    private fun showPanelChangeRoute() {
+        panel_map_center.gone()
+        panel_change_road.visible()
+
+        itemRoadType = ItemRoadType(
+            this,
+            panel_change_road as ViewGroup,
+            object : ItemRoadType.ISelectedTypeListener {
+                override fun onTypeSelected(type: RouteType) {
+                    RoutingPresenter.getDirections(type, addresFrom!!.location!!,
+                        addresTo!!.location!!,
+                        iActionResult = object : IActionResult {
+                            override fun result(result: Any?, exception: java.lang.Exception?) {
+                                if (result != null) {
+                                    if (result is DirectionModel) {
+                                        log("Result: $result")
+                                    }
+                                } else if (exception != null) {
+                                    log(exception)
+                                }
+                            }
+                        })
+                }
+
+            })
+        itemRoadType.changeTittle(this, RoutingPresenter.currentRouteType)
     }
 
     override fun onRequestPermissionsResult(
