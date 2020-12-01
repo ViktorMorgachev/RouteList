@@ -89,7 +89,7 @@ object NetService : IServices {
                 }
             })
         } else {
-
+            log("Try to get road by OSM")
         }
     }
 

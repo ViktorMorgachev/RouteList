@@ -33,6 +33,7 @@ object RoutingPresenter : IRouting {
                 iActionResult
             )
         }
+        lastRequest?.invoke()
     }
 
     fun changeGeoCodingType() {

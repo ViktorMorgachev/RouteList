@@ -15,11 +15,18 @@ fun locationToLatLng(location: Location) = LatLng(location.lat, location.lng)
 
 fun getPathList(route: Route): ArrayList<LatLng> {
     val pathList: ArrayList<LatLng> = arrayListOf()
-    for (i in route.paths) {
-        for (j in i.steps) {
-            if (j.polyline.isNotEmpty()) {
-                for (k in j.polyline) {
-                    pathList.add(LatLng(k.lat, k.lng))
+    for (i in route.paths!!) {
+        if (i.steps != null) {
+            for (j in i.steps) {
+                if (j.polyline != null && j.polyline.isNotEmpty()) {
+                    for (k in j.polyline) {
+                        pathList.add(
+                            LatLng(
+                                k.lat,
+                                k.lng
+                            )
+                        )
+                    }
                 }
             }
         }

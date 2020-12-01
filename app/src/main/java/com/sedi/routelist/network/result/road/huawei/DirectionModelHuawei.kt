@@ -3,7 +3,7 @@ package com.sedi.routelist.network.result.road.huawei
 data class DirectionModel(
     val returnCode: String,
     val returnDesc: String,
-    val routes: List<Route>
+    val routes: List<Route>?
 )
 
 data class Bounds(
@@ -28,7 +28,7 @@ data class Path(
     val durationInTraffic: Int,
     val endLocation: EndLocation,
     val startLocation: StartLocation,
-    val steps: List<Step>
+    val steps: List<Step>?
 )
 
 data class Polyline(
@@ -38,7 +38,7 @@ data class Polyline(
 
 data class Route(
     val bounds: Bounds,
-    val paths: List<Path>
+    val paths: List<Path>?
 )
 
 data class Southwest(
@@ -57,7 +57,7 @@ data class Step(
     val duration: Int,
     val endLocation: EndLocation,
     val orientation: Int,
-    val polyline: List<Polyline>,
+    val polyline: List<Polyline>?,
     val roadName: String,
     val startLocation: StartLocation
 )

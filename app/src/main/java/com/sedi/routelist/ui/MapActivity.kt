@@ -2,6 +2,7 @@ package com.sedi.routelist.ui
 
 import android.app.Activity
 import android.content.Intent
+import android.location.Location
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.ViewGroup
@@ -31,13 +32,14 @@ import com.sedi.routelist.presenters.LocationPresenter
 import com.sedi.routelist.presenters.RoutingPresenter
 import kotlinx.android.synthetic.main.huawei_map_layout.*
 import kotlinx.android.synthetic.main.item_center_map.*
+import kotlinx.android.synthetic.main.item_road_info.*
 
 
 class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleListener,
     HuaweiMap.OnMapClickListener {
 
     private lateinit var hMap: HuaweiMap
-    private var mapMode: Mode = Mode.GET_ROUTE
+    private var mapMode: Mode = Mode.GET_POINT
     private var currentAddress: Address? = null
     private val points: ArrayList<Marker> = arrayListOf()
     private lateinit var itemRoadType: ItemRoadType
@@ -59,6 +61,9 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
         } else {
             mapMode = Mode.GET_ROUTE
         }
+
+        if (testMode)
+            showPanelChangeRoute()
 
         if (savedInstanceState != null)
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
@@ -137,6 +142,33 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                     if (result != null) {
                                         if (result is DirectionModel) {
                                             log("Result: $result")
+                                            var pathList: ArrayList<LatLng> = arrayListOf()
+                                            if (result.routes != null && result.routes.isNotEmpty()) {
+                                                val route = result.routes[0]
+                                                if (route.paths != null) {
+                                                    pathList = getPathList(route)
+                                                    panel_road_info.visible(500)
+                                                    tv_road_distance.text = String.format(
+                                                        resources.getString(
+                                                            R.string.distance,
+                                                            result.routes[0].paths?.get(0)?.distance.toString()
+                                                        )
+                                                    )
+                                                    tv_road_time.text = String.format(
+                                                        resources.getString(
+                                                            R.string.duration,
+                                                            result.routes[0].paths?.get(0)?.duration.toString()
+                                                        )
+                                                    )
+                                                }
+
+
+                                            }
+                                            if (!testMode && pathList.isNotEmpty())
+                                                hMap.addPolyline(
+                                                    PolylineOptions().addAll(pathList)
+                                                        .color(resources.getColor(R.color.colorPrimary))
+                                                )
                                         } else {
                                             if (result is ErrorResponseHuawei) {
                                                 RoutingPresenter.changeGeoCodingType()
@@ -172,6 +204,9 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
             panel_change_road as ViewGroup,
             object : ItemRoadType.ISelectedTypeListener {
                 override fun onTypeSelected(type: RouteType) {
+
+                    itemRoadType.changeTittle(this@MapActivity, type)
+
                     RoutingPresenter.getDirections(type, addresFrom!!.location!!,
                         addresTo!!.location!!,
                         iActionResult = object : IActionResult {
@@ -180,8 +215,39 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                     if (result != null) {
                                         if (result is DirectionModel) {
                                             log("Result: $result")
+                                            var pathList: ArrayList<LatLng> = arrayListOf()
+                                            if (result.routes != null && result.routes.isNotEmpty()) {
+                                                val route = result.routes[0]
+                                                if (route.paths != null) {
+                                                    pathList = getPathList(route)
+                                                    panel_road_info.visible(500)
+                                                    tv_road_distance.text = String.format(
+                                                        resources.getString(
+                                                            R.string.distance,
+                                                            result.routes[0].paths?.get(0)?.distance.toString()
+                                                        )
+                                                    )
+                                                    tv_road_time.text = String.format(
+                                                        resources.getString(
+                                                            R.string.duration,
+                                                            result.routes[0].paths?.get(0)?.duration.toString()
+                                                        )
+                                                    )
+                                                }
+
+
+                                            }
+                                            log("PathList: $pathList")
+                                            if (!testMode && pathList.isNotEmpty())
+                                                hMap.addPolyline(
+                                                    PolylineOptions().addAll(pathList)
+                                                        .color(resources.getColor(R.color.colorPrimary))
+                                                )
+
+
                                         } else {
                                             if (result is ErrorResponseHuawei) {
+                                                log("Error: $result")
                                                 RoutingPresenter.changeGeoCodingType()
                                                 RoutingPresenter.repeatRequest()
                                             }
@@ -437,11 +503,14 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     }
 
     companion object {
+        const val testMode = false
         const val KEY_REQUEST_CODE_GET_POINT = 2
         const val KEY_REQUEST_LOCATION_PERMISSION = 3
         const val KEY_WORK_MODE = "KEY_WORK_MODE"
-        private var addresFrom: Address? = null
-        private var addresTo: Address? = null
+        private var addresFrom: Address? =
+            null // Address("Adress1, Address1", LatLng(43.90401, 87.5588))
+        private var addresTo: Address? =
+            null //Address("Adress2, Address2", LatLng(43.8275, 87.58392))
         private const val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
         fun init(
             addressFirst: Address?,
