@@ -1,9 +1,10 @@
 package com.sedi.routelist.commons
 
 import android.app.Activity
+import android.location.Location
 import com.huawei.hms.maps.model.LatLng
-import com.sedi.routelist.network.result.geocode.reverse.huawei.Location
-import com.sedi.routelist.network.result.road.huawei.Route
+import com.sedi.routelist.network.result.road.osm.Route as OSRMRoute
+import com.sedi.routelist.network.result.road.huawei.Route as HuaweiRoute
 
 fun checkNetworkConnectivity(activity: Activity): Boolean {
     return Device.isNetworkAvailable(activity)
@@ -11,9 +12,8 @@ fun checkNetworkConnectivity(activity: Activity): Boolean {
 
 fun emptyLocation() = LatLng(0.0, 0.0)
 
-fun locationToLatLng(location: Location) = LatLng(location.lat, location.lng)
 
-fun getPathList(route: Route): ArrayList<LatLng> {
+fun getPathList(route: HuaweiRoute): ArrayList<LatLng> {
     val pathList: ArrayList<LatLng> = arrayListOf()
     for (i in route.paths!!) {
         if (i.steps != null) {
@@ -30,6 +30,14 @@ fun getPathList(route: Route): ArrayList<LatLng> {
                 }
             }
         }
+    }
+    return pathList
+}
+
+fun getPathList(route: OSRMRoute): ArrayList<LatLng> {
+    val pathList: ArrayList<LatLng> = arrayListOf()
+    for (i in route.geometry.coordinates) {
+        pathList.add(LatLng(i[0], i[1]))
     }
     return pathList
 }

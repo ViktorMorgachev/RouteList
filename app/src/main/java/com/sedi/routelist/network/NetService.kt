@@ -13,6 +13,7 @@ import com.sedi.routelist.network.result.geocode.reverse.osm.AddressesOSM
 import com.sedi.routelist.network.result.road.huawei.DirectionModel
 import com.sedi.routelist.interfaces.IActionResult
 import com.sedi.routelist.network.result.road.huawei.ErrorResponseHuawei
+import com.sedi.routelist.network.result.road.osm.RoadResponseOSRM
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -35,7 +36,7 @@ object NetService : IServices {
             val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
             val urlBuilder =
                 StringBuilder("https://mapapi.cloud.huawei.com/mapApi/v1/routeService/")
-            urlBuilder.append(routeType.api).append("?key=${MyApplication.api_key}")
+            urlBuilder.append(routeType.HuaweiApi).append("?key=${MyApplication.api_key}")
 
             val jsonObject = JSONObject().apply {
                 put("origin", JSONObject().apply {
@@ -89,7 +90,38 @@ object NetService : IServices {
                 }
             })
         } else {
-            log("Try to get road by OSM")
+            val urlBuilder = StringBuilder("http://osrm1.sedi.ru:5005/route/v1/")
+            urlBuilder.append(routeType.OSRMApi).append("/").append(latLngFrom.latitude).append(";")
+                .append(latLngTo.longitude)
+                .append("?overview=full&geometries=polyline&alternatives=true")
+
+            val client = OkHttpClient()
+            val request: Request = Request.Builder()
+                .url(urlBuilder.toString())
+                .get()
+                .build()
+
+            log("Request: URL $urlBuilder")
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    log("OSRMGetRoad: $e", LOG_LEVEL.ERROR)
+                    iActionResult.result(null, e)
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    try {
+                        val result = response.body?.string()
+                        log("Result: $result")
+                        val gson = GsonBuilder().create()
+                        val road = gson.fromJson(result, RoadResponseOSRM::class.java) as RoadResponseOSRM
+                        iActionResult.result(road, null)
+                    } catch (e: Exception) {
+                        iActionResult.result(null, e)
+                    }
+
+                }
+            })
+
         }
     }
 

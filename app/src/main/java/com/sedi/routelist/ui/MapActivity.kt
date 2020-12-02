@@ -28,6 +28,7 @@ import com.sedi.routelist.network.result.road.huawei.DirectionModel
 import com.sedi.routelist.interfaces.IActionResult
 import com.sedi.routelist.network.NetService
 import com.sedi.routelist.network.result.road.huawei.ErrorResponseHuawei
+import com.sedi.routelist.network.result.road.osm.RoadResponseOSRM
 import com.sedi.routelist.presenters.LocationPresenter
 import com.sedi.routelist.presenters.RoutingPresenter
 import kotlinx.android.synthetic.main.huawei_map_layout.*
@@ -180,9 +181,33 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                         log(exception)
                                     }
                                 } else if (RoutingPresenter.geoCodingType == GeoCodingType.OpenStreetMap) {
+                                    log("Result: $result")
                                     if (result != null) {
-                                        // TODO от осм запросы не обрабатываем если ошибка, покажем текст ошибки
-                                        log("Result: $result")
+                                        if (result is RoadResponseOSRM) {
+                                            if (result.routes.isNotEmpty()) {
+                                                var pathList: ArrayList<LatLng> = arrayListOf()
+                                                pathList = getPathList(result.routes[0])
+                                                panel_road_info.visible(500)
+                                                tv_road_distance.text = String.format(
+                                                    resources.getString(
+                                                        R.string.distance,
+                                                        result.routes[0].distance.toString()
+                                                    )
+                                                )
+                                                tv_road_time.text = String.format(
+                                                    resources.getString(
+                                                        R.string.duration,
+                                                        result.routes[0].duration.toString()
+                                                    )
+                                                )
+
+                                                if (!testMode && pathList.isNotEmpty())
+                                                    hMap.addPolyline(
+                                                        PolylineOptions().addAll(pathList)
+                                                            .color(resources.getColor(R.color.colorPrimary))
+                                                    )
+                                            }
+                                        }
                                     } else if (exception != null) {
                                         log(exception)
                                     }
