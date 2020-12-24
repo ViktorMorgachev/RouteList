@@ -6,6 +6,7 @@ import android.location.Location
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.annotation.UiThread
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import com.huawei.hms.maps.CameraUpdateFactory
@@ -34,6 +35,7 @@ import com.sedi.routelist.presenters.RoutingPresenter
 import kotlinx.android.synthetic.main.huawei_map_layout.*
 import kotlinx.android.synthetic.main.item_center_map.*
 import kotlinx.android.synthetic.main.item_road_info.*
+import kotlin.math.roundToInt
 
 
 class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleListener,
@@ -45,6 +47,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     private val points: ArrayList<Marker> = arrayListOf()
     private lateinit var itemRoadType: ItemRoadType
     private val geoCodingType = GeoCodingType.OpenStreetMap
+    private var polyline: Polyline? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -148,28 +151,31 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                                 val route = result.routes[0]
                                                 if (route.paths != null) {
                                                     pathList = getPathList(route)
-                                                    panel_road_info.visible(500)
-                                                    tv_road_distance.text = String.format(
-                                                        resources.getString(
-                                                            R.string.distance,
-                                                            result.routes[0].paths?.get(0)?.distance.toString()
+                                                    runOnUiThread {
+                                                        panel_road_info.visible(500)
+                                                        tv_road_distance.text = String.format(
+                                                            resources.getString(
+                                                                R.string.distance,
+                                                                (result.routes[0].paths?.get(0)?.distance?.div(
+                                                                    1000
+                                                                )).toString()
+                                                            )
                                                         )
-                                                    )
-                                                    tv_road_time.text = String.format(
-                                                        resources.getString(
-                                                            R.string.duration,
-                                                            result.routes[0].paths?.get(0)?.duration.toString()
+                                                        tv_road_time.text = String.format(
+                                                            resources.getString(
+                                                                R.string.duration,
+                                                                (result.routes[0].paths?.get(0)?.duration?.div(
+                                                                    3600
+                                                                ))?.toString()
+                                                            )
                                                         )
-                                                    )
+                                                        if (!testMode && pathList.isNotEmpty())
+                                                            drawRoad(pathList)
+                                                    }
+
                                                 }
 
-
                                             }
-                                            if (!testMode && pathList.isNotEmpty())
-                                                hMap.addPolyline(
-                                                    PolylineOptions().addAll(pathList)
-                                                        .color(resources.getColor(R.color.colorPrimary))
-                                                )
                                         } else {
                                             if (result is ErrorResponseHuawei) {
                                                 RoutingPresenter.changeGeoCodingType()
@@ -187,25 +193,24 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                             if (result.routes.isNotEmpty()) {
                                                 var pathList: ArrayList<LatLng> = arrayListOf()
                                                 pathList = getPathList(result.routes[0])
-                                                panel_road_info.visible(500)
-                                                tv_road_distance.text = String.format(
-                                                    resources.getString(
-                                                        R.string.distance,
-                                                        result.routes[0].distance.toString()
+                                                runOnUiThread {
+                                                    panel_road_info.visible(500)
+                                                    tv_road_distance.text = String.format(
+                                                        resources.getString(
+                                                            R.string.distance,
+                                                            result.routes[0].distance.toString()
+                                                        )
                                                     )
-                                                )
-                                                tv_road_time.text = String.format(
-                                                    resources.getString(
-                                                        R.string.duration,
-                                                        result.routes[0].duration.toString()
+                                                    tv_road_time.text = String.format(
+                                                        resources.getString(
+                                                            R.string.duration,
+                                                            result.routes[0].duration.toString()
+                                                        )
                                                     )
-                                                )
+                                                    if (!testMode && pathList.isNotEmpty())
+                                                        drawRoad(pathList)
+                                                }
 
-                                                if (!testMode && pathList.isNotEmpty())
-                                                    hMap.addPolyline(
-                                                        PolylineOptions().addAll(pathList)
-                                                            .color(resources.getColor(R.color.colorPrimary))
-                                                    )
                                             }
                                         }
                                     } else if (exception != null) {
@@ -217,6 +222,18 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                 }
             }
 
+        }
+    }
+
+    private fun drawRoad(pathList: ArrayList<LatLng>) {
+        polyline?.let {
+            polyline!!.remove()
+        }
+        polyline = hMap.addPolyline(
+            PolylineOptions().addAll(pathList)
+                .color(resources.getColor(R.color.colorPrimary))
+        ).apply {
+            width = 5f
         }
     }
 
@@ -245,29 +262,31 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                                 val route = result.routes[0]
                                                 if (route.paths != null) {
                                                     pathList = getPathList(route)
-                                                    panel_road_info.visible(500)
-                                                    tv_road_distance.text = String.format(
-                                                        resources.getString(
-                                                            R.string.distance,
-                                                            result.routes[0].paths?.get(0)?.distance.toString()
+                                                    runOnUiThread {
+                                                        panel_road_info.visible(500)
+                                                        tv_road_distance.text = String.format(
+                                                            resources.getString(
+                                                                R.string.distance,
+                                                                (result.routes[0].paths?.get(0)?.distance?.div(
+                                                                    1000
+                                                                )).toString()
+                                                            )
                                                         )
-                                                    )
-                                                    tv_road_time.text = String.format(
-                                                        resources.getString(
-                                                            R.string.duration,
-                                                            result.routes[0].paths?.get(0)?.duration.toString()
+                                                        tv_road_time.text = String.format(
+                                                            resources.getString(
+                                                                R.string.duration,
+                                                                (result.routes[0].paths?.get(0)?.duration?.div(
+                                                                    60
+                                                                ))?.roundToInt().toString()
+                                                            )
                                                         )
-                                                    )
+                                                        if (!testMode && pathList.isNotEmpty())
+                                                            drawRoad(pathList)
+                                                    }
+
                                                 }
 
-
                                             }
-                                            log("PathList: $pathList")
-                                            if (!testMode && pathList.isNotEmpty())
-                                                hMap.addPolyline(
-                                                    PolylineOptions().addAll(pathList)
-                                                        .color(resources.getColor(R.color.colorPrimary))
-                                                )
 
 
                                         } else {
@@ -282,9 +301,32 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                     }
                                 } else {
                                     if (RoutingPresenter.geoCodingType == GeoCodingType.OpenStreetMap) {
+                                        log("Result: $result")
                                         if (result != null) {
-                                            // TODO от осм запросы не обрабатываем если ошибка, покажем текст ошибки
-                                            log("Result: $result")
+                                            if (result is RoadResponseOSRM) {
+                                                if (result.routes.isNotEmpty()) {
+                                                    var pathList: ArrayList<LatLng> = arrayListOf()
+                                                    pathList = getPathList(result.routes[0])
+                                                    runOnUiThread {
+                                                        panel_road_info.visible(500)
+                                                        tv_road_distance.text = String.format(
+                                                            resources.getString(
+                                                                R.string.distance,
+                                                                result.routes[0].distance.toString()
+                                                            )
+                                                        )
+                                                        tv_road_time.text = String.format(
+                                                            resources.getString(
+                                                                R.string.duration,
+                                                                result.routes[0].duration.toString()
+                                                            )
+                                                        )
+                                                        if (!testMode && pathList.isNotEmpty())
+                                                            drawRoad(pathList)
+                                                    }
+
+                                                }
+                                            }
                                         } else if (exception != null) {
                                             log(exception)
                                         }

@@ -23,9 +23,9 @@ data class Northeast(
 )
 
 data class Path(
-    val distance: Int,
-    val duration: Int,
-    val durationInTraffic: Int,
+    val distance: Double,
+    val duration: Double,
+    val durationInTraffic: Double,
     val endLocation: EndLocation,
     val startLocation: StartLocation,
     val steps: List<Step>?
@@ -53,8 +53,8 @@ data class StartLocation(
 
 data class Step(
     val action: String,
-    val distance: Int,
-    val duration: Int,
+    val distance: Double,
+    val duration: Double,
     val endLocation: EndLocation,
     val orientation: Int,
     val polyline: List<Polyline>?,
