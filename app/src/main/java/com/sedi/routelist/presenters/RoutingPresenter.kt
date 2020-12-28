@@ -23,7 +23,6 @@ object RoutingPresenter : IRouting {
         iActionResult: IActionResult
     ) {
         this.routeType = routeType
-        this.routeType = routeType
         lastRequest = {
             NetService.getDirection(
                 geoCodingType,
@@ -36,6 +35,10 @@ object RoutingPresenter : IRouting {
         lastRequest?.invoke()
     }
 
+    override fun repeatRequest() {
+        lastRequest?.invoke()
+    }
+
     fun changeGeoCodingType() {
         geoCodingType = if (geoCodingType == GeoCodingType.HUAWEI) {
             GeoCodingType.OpenStreetMap
@@ -44,11 +47,4 @@ object RoutingPresenter : IRouting {
         }
     }
 
-    fun setRouteType(routeType: RouteType) {
-        this.routeType = routeType
-    }
-
-    fun repeatRequest() {
-        lastRequest?.invoke()
-    }
 }

@@ -24,18 +24,20 @@ import java.io.IOException
 
 object NetService : IServices {
 
-    private var lastRequest: (() -> Unit)? = null
+    private var requestReverseGeocodingHuawei: (() -> Unit)? = null
+    private var requestReverseGeocodingOSRM: (() -> Unit)? = null
+    private var lastReverseType: ReverseRequestType = ReverseRequestType.HUAWEI
 
 
     override fun getDirection(
-        geoCodingType: GeoCodingType,
+        currentGeoCodingType: GeoCodingType,
         routeType: RouteType,
         latLngFrom: LatLng,
         latLngTo: LatLng,
         iActionResult: IActionResult
     ) {
 
-        if (geoCodingType == GeoCodingType.HUAWEI) {
+        if (currentGeoCodingType == GeoCodingType.HUAWEI) {
             val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
             val urlBuilder =
                 StringBuilder("https://mapapi.cloud.huawei.com/mapApi/v1/routeService/")
@@ -116,7 +118,8 @@ object NetService : IServices {
                         val result = response.body?.string()
                         log("Result: $result")
                         val gson = GsonBuilder().create()
-                        val road = gson.fromJson(result, RoadResponseOSRM::class.java) as RoadResponseOSRM
+                        val road =
+                            gson.fromJson(result, RoadResponseOSRM::class.java) as RoadResponseOSRM
                         iActionResult.result(road, null)
                     } catch (e: Exception) {
                         iActionResult.result(null, e)
@@ -128,17 +131,28 @@ object NetService : IServices {
         }
     }
 
+    override fun changeReverseGeocodingType() {
+        lastReverseType =
+            if (lastReverseType == ReverseRequestType.HUAWEI) ReverseRequestType.OpenStreetMap else ReverseRequestType.HUAWEI
+    }
+
+
     override fun getAddress(
         geoCodingType: GeoCodingType,
         latLng: LatLng,
         iActionResult: IActionResult
     ) {
         if (geoCodingType == GeoCodingType.HUAWEI) {
-            reverseHuaweiGeocoding(latLng, iActionResult)
+            requestReverseGeocodingHuawei = { reverseHuaweiGeocoding(latLng, iActionResult) }
+            lastReverseType = ReverseRequestType.HUAWEI
+            requestReverseGeocodingHuawei?.invoke()
         } else if (geoCodingType == GeoCodingType.OpenStreetMap) {
-            reverseOSMGeocoding(latLng, iActionResult)
+            requestReverseGeocodingOSRM = { reverseOSMGeocoding(latLng, iActionResult) }
+            lastReverseType = ReverseRequestType.OpenStreetMap
+            requestReverseGeocodingOSRM?.invoke()
         }
     }
+
 
     private fun reverseOSMGeocoding(latLng: LatLng, iActionResult: IActionResult) {
         val url =
@@ -213,6 +227,18 @@ object NetService : IServices {
             }
 
             override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    try {
+                        val result = response.body?.string()
+                        log("Error: $result")
+                        val gson = GsonBuilder().create()
+                        val data = gson.fromJson(result, ErrorResponseHuawei::class.java)
+                        iActionResult.result(data, null)
+                    } catch (e: Exception) {
+                        iActionResult.result(null, e)
+                    }
+                    return
+                }
                 try {
                     val result = response.body?.string()
                     log("Result: $result")
@@ -226,6 +252,18 @@ object NetService : IServices {
             }
         })
     }
+
+    override fun repeatGetAddress() {
+        when (lastReverseType) {
+            ReverseRequestType.HUAWEI -> requestReverseGeocodingOSRM?.invoke()
+            ReverseRequestType.OpenStreetMap -> requestReverseGeocodingHuawei?.invoke()
+        }
+    }
+
+    enum class ReverseRequestType {
+        OpenStreetMap, HUAWEI
+    }
+
 }
 
 

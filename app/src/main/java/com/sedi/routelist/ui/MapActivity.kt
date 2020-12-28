@@ -35,6 +35,7 @@ import com.sedi.routelist.presenters.RoutingPresenter
 import kotlinx.android.synthetic.main.huawei_map_layout.*
 import kotlinx.android.synthetic.main.item_center_map.*
 import kotlinx.android.synthetic.main.item_road_info.*
+import kotlin.math.log
 import kotlin.math.roundToInt
 
 
@@ -157,13 +158,15 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                                             resources.getString(
                                                                 R.string.distance,
                                                                 result.routes[0].paths?.get(0)?.distance?.div(
-                                                                    1000)
+                                                                    1000
+                                                                )
                                                             )
                                                         )
                                                         tv_road_time.text = String.format(
                                                             resources.getString(
                                                                 R.string.duration,
-                                                                ((result.routes[0].paths?.get(0)?.duration)!! / 60).toInt().toString()
+                                                                ((result.routes[0].paths?.get(0)?.duration)!! / 60).toInt()
+                                                                    .toString()
                                                             )
                                                         )
                                                         if (!testMode && pathList.isNotEmpty())
@@ -270,8 +273,11 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                                             )
                                                         )
                                                         tv_road_time.text = String.format(
-                                                            resources.getString(R.string.duration,
-                                                                (((result.routes[0].paths?.get(0)?.duration)!! / 60).toInt().toString()) )
+                                                            resources.getString(
+                                                                R.string.duration,
+                                                                (((result.routes[0].paths?.get(0)?.duration)!! / 60).toInt()
+                                                                    .toString())
+                                                            )
 
                                                         )
                                                         if (!testMode && pathList.isNotEmpty())
@@ -427,42 +433,52 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
     override fun onCameraIdle() {
         val location = hMap.cameraPosition?.target
-
         if (location != null) {
             NetService.getAddress(
                 geoCodingType,
                 location,
                 object : IActionResult {
                     override fun result(result: Any?, exception: Exception?) {
-                        if (result != null) {
-                            if (geoCodingType == GeoCodingType.HUAWEI) {
-                                val data = result as GeocodeModelHuawei
-                                if (data.sites.isNotEmpty()) {
-                                    tv_address.post {
-                                        tv_address.text = data.sites[0].formatAddress
+                        if (geoCodingType == GeoCodingType.HUAWEI) {
+                            if (result != null) {
+                                if (result is Address) {
+                                    val data = result
+                                    currentAddress = data
+                                    ll_address_info.post {
+                                        if (!ll_address_info.isVisible)
+                                            ll_address_info.visible(500)
+                                        tv_address.text = data.address
                                     }
-                                    currentAddress = Address(
-                                        data.sites[0].formatAddress,
-                                        LatLng(
-                                            data.sites[0].location.lat,
-                                            data.sites[0].location.lng
-                                        )
-                                    )
+                                } else if (result is ErrorResponseHuawei) {
+                                    log("Error: $result")
+                                    NetService.changeReverseGeocodingType()
+                                    NetService.repeatGetAddress()
+                                }
+                            } else if (exception != null) {
+                                NetService.changeReverseGeocodingType()
+                                NetService.repeatGetAddress()
+                            }
+                        } else {
+                            if (result != null) {
+                                if (result is Address) {
+                                    val data = result as Address
+                                    currentAddress = data
+                                    tv_address.post {
+                                        if (!ll_address_info.isVisible)
+                                            ll_address_info.visible(500)
+                                        tv_address.text = data.address
+                                    }
+                                } else if (result is ErrorResponseHuawei) {
+                                    log("Error: $result")
                                 }
                             } else {
-                                val data = result as Address
-                                currentAddress = data
-                                tv_address.post {
-                                    tv_address.text = data.address
+                                if (exception != null) {
+                                    log(exception)
                                 }
                             }
-                            if (!ll_address_info.isVisible)
-                                ll_address_info.post {
-                                    ll_address_info.visible(500)
-                                }
-                        } else if (exception != null) {
-                            log(exception)
+
                         }
+
                     }
                 })
         }

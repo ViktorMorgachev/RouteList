@@ -14,5 +14,7 @@ interface IServices {
         iActionResult: IActionResult
     )
 
+    fun changeReverseGeocodingType()
     fun getAddress(geoCodingType: GeoCodingType, latLng: LatLng, iActionResult: IActionResult)
+    fun repeatGetAddress()
 }

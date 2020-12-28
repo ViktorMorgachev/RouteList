@@ -20,6 +20,7 @@ interface IRouting {
         latLngTo: LatLng,
         iActionResult: IActionResult
     )
+    fun repeatRequest()
 }
 
 interface IGeocode {
