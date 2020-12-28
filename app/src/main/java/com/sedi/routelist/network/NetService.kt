@@ -24,6 +24,9 @@ import java.io.IOException
 
 object NetService : IServices {
 
+    private var lastRequest: (() -> Unit)? = null
+
+
     override fun getDirection(
         geoCodingType: GeoCodingType,
         routeType: RouteType,

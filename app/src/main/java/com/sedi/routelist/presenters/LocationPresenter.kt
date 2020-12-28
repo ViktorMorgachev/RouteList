@@ -8,7 +8,6 @@ import com.sedi.routelist.contracts.ILocation
 
 object LocationPresenter : ILocation {
 
-
     private lateinit var settingsClient: SettingsClient
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
     private var mLocationRequest: LocationRequest? = null

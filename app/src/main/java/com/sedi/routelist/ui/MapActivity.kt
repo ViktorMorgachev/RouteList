@@ -46,7 +46,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
     private var currentAddress: Address? = null
     private val points: ArrayList<Marker> = arrayListOf()
     private lateinit var itemRoadType: ItemRoadType
-    private val geoCodingType = GeoCodingType.OpenStreetMap
+    private val geoCodingType = GeoCodingType.HUAWEI
     private var polyline: Polyline? = null
 
 
@@ -156,17 +156,14 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                                         tv_road_distance.text = String.format(
                                                             resources.getString(
                                                                 R.string.distance,
-                                                                (result.routes[0].paths?.get(0)?.distance?.div(
-                                                                    1000
-                                                                )).toString()
+                                                                result.routes[0].paths?.get(0)?.distance?.div(
+                                                                    1000)
                                                             )
                                                         )
                                                         tv_road_time.text = String.format(
                                                             resources.getString(
                                                                 R.string.duration,
-                                                                (result.routes[0].paths?.get(0)?.duration?.div(
-                                                                    3600
-                                                                ))?.toString()
+                                                                ((result.routes[0].paths?.get(0)?.duration)!! / 60).toInt().toString()
                                                             )
                                                         )
                                                         if (!testMode && pathList.isNotEmpty())
@@ -198,7 +195,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                                     tv_road_distance.text = String.format(
                                                         resources.getString(
                                                             R.string.distance,
-                                                            result.routes[0].distance.toString()
+                                                            result.routes[0].distance
                                                         )
                                                     )
                                                     tv_road_time.text = String.format(
@@ -267,18 +264,15 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                                         tv_road_distance.text = String.format(
                                                             resources.getString(
                                                                 R.string.distance,
-                                                                (result.routes[0].paths?.get(0)?.distance?.div(
+                                                                result.routes[0].paths?.get(0)?.distance?.div(
                                                                     1000
-                                                                )).toString()
+                                                                )
                                                             )
                                                         )
                                                         tv_road_time.text = String.format(
-                                                            resources.getString(
-                                                                R.string.duration,
-                                                                (result.routes[0].paths?.get(0)?.duration?.div(
-                                                                    60
-                                                                ))?.roundToInt().toString()
-                                                            )
+                                                            resources.getString(R.string.duration,
+                                                                (((result.routes[0].paths?.get(0)?.duration)!! / 60).toInt().toString()) )
+
                                                         )
                                                         if (!testMode && pathList.isNotEmpty())
                                                             drawRoad(pathList)
@@ -312,7 +306,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                                                         tv_road_distance.text = String.format(
                                                             resources.getString(
                                                                 R.string.distance,
-                                                                result.routes[0].distance.toString()
+                                                                result.routes[0].distance
                                                             )
                                                         )
                                                         tv_road_time.text = String.format(

@@ -32,7 +32,7 @@
 
     <string name="input_address">Input address</string>
 
-    <string name="distance">Distance %s Km</string>
+    <string name="distance">Distance %.2f Km</string>
     <string name="duration">Duration %s Min</string>
 
     <string name="walk">By Walk</string>

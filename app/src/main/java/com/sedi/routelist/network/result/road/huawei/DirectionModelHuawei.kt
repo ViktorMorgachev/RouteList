@@ -12,11 +12,6 @@ data class Bounds(
 )
 
 
-data class EndLocation(
-    val lat: Double,
-    val lng: Double
-)
-
 data class Northeast(
     val lat: Double,
     val lng: Double
@@ -25,10 +20,14 @@ data class Northeast(
 data class Path(
     val distance: Double,
     val duration: Double,
+    val durationInTrafficText: String = "",
     val durationInTraffic: Double,
+    val distanceText: String,
     val endLocation: EndLocation,
     val startLocation: StartLocation,
-    val steps: List<Step>?
+    val steps: List<Step>?,
+    val endAddress: String,
+    val startAddress: String
 )
 
 data class Polyline(
@@ -47,6 +46,11 @@ data class Southwest(
 )
 
 data class StartLocation(
+    val lat: Double,
+    val lng: Double
+)
+
+data class EndLocation(
     val lat: Double,
     val lng: Double
 )
