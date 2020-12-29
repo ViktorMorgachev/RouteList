@@ -132,8 +132,7 @@ object NetService : IServices {
     }
 
     override fun changeReverseGeocodingType() {
-        lastReverseType =
-            if (lastReverseType == ReverseRequestType.HUAWEI) ReverseRequestType.OpenStreetMap else ReverseRequestType.HUAWEI
+        lastReverseType = if (lastReverseType == ReverseRequestType.HUAWEI) ReverseRequestType.OpenStreetMap else ReverseRequestType.HUAWEI
     }
 
 
@@ -142,12 +141,12 @@ object NetService : IServices {
         latLng: LatLng,
         iActionResult: IActionResult
     ) {
+        requestReverseGeocodingHuawei = { reverseHuaweiGeocoding(latLng, iActionResult) }
+        requestReverseGeocodingOSRM = { reverseOSMGeocoding(latLng, iActionResult) }
         if (geoCodingType == GeoCodingType.HUAWEI) {
-            requestReverseGeocodingHuawei = { reverseHuaweiGeocoding(latLng, iActionResult) }
             lastReverseType = ReverseRequestType.HUAWEI
             requestReverseGeocodingHuawei?.invoke()
         } else if (geoCodingType == GeoCodingType.OpenStreetMap) {
-            requestReverseGeocodingOSRM = { reverseOSMGeocoding(latLng, iActionResult) }
             lastReverseType = ReverseRequestType.OpenStreetMap
             requestReverseGeocodingOSRM?.invoke()
         }
@@ -255,8 +254,8 @@ object NetService : IServices {
 
     override fun repeatGetAddress() {
         when (lastReverseType) {
-            ReverseRequestType.HUAWEI -> requestReverseGeocodingOSRM?.invoke()
-            ReverseRequestType.OpenStreetMap -> requestReverseGeocodingHuawei?.invoke()
+            ReverseRequestType.HUAWEI -> requestReverseGeocodingHuawei?.invoke()
+            ReverseRequestType.OpenStreetMap -> requestReverseGeocodingOSRM?.invoke()
         }
     }
 
