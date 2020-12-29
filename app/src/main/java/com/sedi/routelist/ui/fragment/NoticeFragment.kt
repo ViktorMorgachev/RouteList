@@ -118,7 +118,6 @@ class NoticeFragment : Fragment(),
                 true
             }
 
-
         } else {
             binding.ivShowOnMapDestination.gone()
             binding.ivShowOnMapResidence.gone()
@@ -177,6 +176,8 @@ class NoticeFragment : Fragment(),
             }
             true
         }
+
+
     }
 
 
@@ -259,7 +260,7 @@ class NoticeFragment : Fragment(),
 
     }
 
-    override fun initNotice(withInternet: Boolean) {
+    override fun initNotice(hasNetwork: Boolean) {
 
         notice?.fio = et_fio.text.toString()
         notice?.date = et_date.text.toString()
@@ -269,21 +270,29 @@ class NoticeFragment : Fragment(),
         notice?.reason = et_reason.text.toString()
         notice?.resetingTime = et_reseting_time.text.toString()
         notice?.phoneNumber = et_phone.text.toString()
-        val address = RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address
-        val editText = RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) as EditText
-        // Init location
-        if (withInternet) {
-            if (editText.tag == "address_residence") {
-                notice?.residenceAdress?.location = address.location
+
+
+        if (RememberData.remindMe(RememberData.KEYS.ADDRESS.value) != null
+            && RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) != null
+        ) {
+            val address: Address = RememberData.remindMe(RememberData.KEYS.ADDRESS.value) as Address
+            val editText: EditText? =
+                RememberData.remindMe(RememberData.KEYS.EDITTEXT.value) as EditText
+            // Init location
+            if (hasNetwork) {
+                if (editText?.tag == "address_residence") {
+                    notice?.residenceAdress?.location = address.location
+                } else {
+                    notice?.destinationAdress?.location = address.location
+                }
             } else {
-                notice?.destinationAdress?.location = address.location
+                if (editText?.tag == "address_residence") {
+                    notice?.residenceAdress?.location = null
+                } else {
+                    notice?.destinationAdress?.location = null
+                }
             }
-        } else {
-            if (editText.tag == "address_residence") {
-                notice?.residenceAdress?.location = null
-            } else {
-                notice?.destinationAdress?.location = null
-            }
+
         }
 
         if (notice?.destinationAdress?.location != null &&

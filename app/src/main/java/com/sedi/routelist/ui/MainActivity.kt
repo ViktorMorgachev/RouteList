@@ -147,7 +147,7 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
     }
 
     override fun onSave(notice: Notice, position: Int) {
-        log("SaveNotice: $position")
+        log("SaveNotice: Notice $notice Position $position")
         asynkInsertNotice(
             convertNoticeItemToRoomModel(notice),
             this,

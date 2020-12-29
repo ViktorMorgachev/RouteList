@@ -433,6 +433,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
     override fun onCameraIdle() {
         val location = hMap.cameraPosition?.target
+        log("Camera zoom: ")
         if (location != null) {
             NetService.getAddress(
                 geoCodingType,
