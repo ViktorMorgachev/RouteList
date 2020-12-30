@@ -462,8 +462,9 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
                         } else {
                             if (result != null) {
                                 if (result is Address) {
-                                    val data = result as Address
+                                    val data = result
                                     currentAddress = data
+                                    log("Address ${data.address}")
                                     tv_address.post {
                                         if (!ll_address_info.isVisible)
                                             ll_address_info.visible(500)

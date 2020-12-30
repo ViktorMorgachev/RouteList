@@ -156,25 +156,39 @@ class NoticeFragment : Fragment(),
 
     }
 
-    fun initStates(){
+    fun initStates() {
         if (checkNetworkConnectivity(requireActivity())) {
             binding.ivShowOnMapDestination.visible()
             binding.ivShowOnMapResidence.visible()
 
-            binding.etDestinationAdress.setOnTouchListener { _, _ ->
-                RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.destinationAdress)
-                RememberData.rememberMe(
-                    RememberData.KEYS.EDITTEXT.value,
-                    binding.etDestinationAdress
-                )
-                fragmentListenerCallback?.showSearchAddress()
-                true
+            if (binding.etDestinationAdress.text.isEmpty()) {
+                binding.etDestinationAdress.setOnTouchListener { _, _ ->
+                    RememberData.rememberMe(
+                        RememberData.KEYS.ADDRESS.value,
+                        notice!!.destinationAdress
+                    )
+                    RememberData.rememberMe(
+                        RememberData.KEYS.EDITTEXT.value,
+                        binding.etDestinationAdress
+                    )
+                    fragmentListenerCallback?.showSearchAddress()
+                    true
+                }
             }
-            binding.etResidenceAdress.setOnTouchListener { _, _ ->
-                RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.residenceAdress)
-                RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
-                fragmentListenerCallback?.showSearchAddress()
-                true
+
+            if (binding.etResidenceAdress.text.isEmpty()) {
+                binding.etResidenceAdress.setOnTouchListener { _, _ ->
+                    RememberData.rememberMe(
+                        RememberData.KEYS.ADDRESS.value,
+                        notice!!.residenceAdress
+                    )
+                    RememberData.rememberMe(
+                        RememberData.KEYS.EDITTEXT.value,
+                        binding.etResidenceAdress
+                    )
+                    fragmentListenerCallback?.showSearchAddress()
+                    true
+                }
             }
 
             if (notice?.destinationAdress?.location != null &&
