@@ -17,6 +17,7 @@ import android.widget.TimePicker
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.huawei.hms.framework.common.Utils
 import com.sedi.routelist.R
 import com.sedi.routelist.commons.*
 import com.sedi.routelist.databinding.RouteListFragmentBinding
@@ -63,8 +64,7 @@ class NoticeFragment : Fragment(),
         binding.executePendingBindings()
 
         initListeners()
-
-
+        initStates()
 
         return binding.root
     }
@@ -98,30 +98,6 @@ class NoticeFragment : Fragment(),
             }
         }
 
-        if (checkNetworkConnectivity(requireActivity())) {
-            binding.ivShowOnMapDestination.visible()
-            binding.ivShowOnMapResidence.visible()
-
-            binding.etDestinationAdress.setOnTouchListener { _, _ ->
-                RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.destinationAdress)
-                RememberData.rememberMe(
-                    RememberData.KEYS.EDITTEXT.value,
-                    binding.etDestinationAdress
-                )
-                fragmentListenerCallback?.showSearchAddress()
-                true
-            }
-            binding.etResidenceAdress.setOnTouchListener { _, _ ->
-                RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.residenceAdress)
-                RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
-                fragmentListenerCallback?.showSearchAddress()
-                true
-            }
-
-        } else {
-            binding.ivShowOnMapDestination.gone()
-            binding.ivShowOnMapResidence.gone()
-        }
 
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -180,6 +156,41 @@ class NoticeFragment : Fragment(),
 
     }
 
+    fun initStates(){
+        if (checkNetworkConnectivity(requireActivity())) {
+            binding.ivShowOnMapDestination.visible()
+            binding.ivShowOnMapResidence.visible()
+
+            binding.etDestinationAdress.setOnTouchListener { _, _ ->
+                RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.destinationAdress)
+                RememberData.rememberMe(
+                    RememberData.KEYS.EDITTEXT.value,
+                    binding.etDestinationAdress
+                )
+                fragmentListenerCallback?.showSearchAddress()
+                true
+            }
+            binding.etResidenceAdress.setOnTouchListener { _, _ ->
+                RememberData.rememberMe(RememberData.KEYS.ADDRESS.value, notice!!.residenceAdress)
+                RememberData.rememberMe(RememberData.KEYS.EDITTEXT.value, binding.etResidenceAdress)
+                fragmentListenerCallback?.showSearchAddress()
+                true
+            }
+
+            if (notice?.destinationAdress?.location != null &&
+                notice?.residenceAdress?.location != null
+            ) {
+                binding.btnRoute.visible(500)
+            } else {
+                binding.btnRoute.gone(500)
+            }
+
+        } else {
+            binding.ivShowOnMapDestination.gone()
+            binding.ivShowOnMapResidence.gone()
+        }
+    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -194,6 +205,7 @@ class NoticeFragment : Fragment(),
         pagerAdapter?.noticeFragmentHelper?.currentNotice = notice!!
         pagerAdapter?.noticeFragmentHelper?.currentPosition = position!!
         notice?.dbKey = position!!
+        initStates()
         log("Current position: $position")
     }
 
@@ -294,7 +306,6 @@ class NoticeFragment : Fragment(),
             }
 
         }
-
         if (notice?.destinationAdress?.location != null &&
             notice?.residenceAdress?.location != null
         ) {

@@ -574,9 +574,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, HuaweiMap.OnCameraIdleLi
 
     override fun onResume() {
         super.onResume()
-
-
-
         mapView.onResume()
     }
 

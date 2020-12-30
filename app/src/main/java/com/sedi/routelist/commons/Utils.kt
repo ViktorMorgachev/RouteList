@@ -13,6 +13,8 @@ fun checkNetworkConnectivity(activity: Activity): Boolean {
     return Device.isNetworkAvailable(activity)
 }
 
+
+
 fun emptyLocation() = LatLng(0.0, 0.0)
 
 

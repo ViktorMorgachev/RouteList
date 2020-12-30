@@ -9,6 +9,8 @@ import android.os.Build
 
 object Device {
 
+    val lastNetworkStatus: Boolean = false
+
     fun isNetworkAvailable(context: Context?): Boolean {
         if (context == null) return false
         val connectivityManager =
@@ -35,9 +37,9 @@ object Device {
                 val actNw = connectivityManager.getNetworkCapabilities(nw)
                 actNw != null &&
                         (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
-                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
-                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH))
+                                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                                actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
+                                actNw.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH))
             } else {
                 val nwInfo = connectivityManager.activeNetworkInfo
                 nwInfo != null && nwInfo.isConnected

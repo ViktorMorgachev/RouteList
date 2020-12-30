@@ -48,7 +48,6 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
             MyApplication.instance.initDB(this)
         }
 
-
         log("Language: ${MyApplication.language}")
 
         connectivityListener = ConnectivityListener(this)
@@ -78,7 +77,6 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
 
         tabLayout = findViewById(R.id.tab_layout)
         tabLayout?.setupWithViewPager(viewPager, true)
-
     }
 
 
@@ -331,6 +329,7 @@ class MainActivity : BaseActivity(), LifecycleObserver, IClickListener, IResultC
 
     override fun showMapActivity(addressFrom: Address?, addressTo: Address?) {
         MapActivity.init(addressFrom, addressTo)
+        log("ShowMap: AddressFrom: $addressFrom AddressTo: $addressTo")
         val intent = Intent(this, MapActivity::class.java).apply {
             putExtra(MapActivity.KEY_WORK_MODE, Mode.GET_ROUTE.name)
         }
