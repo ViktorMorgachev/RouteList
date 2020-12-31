@@ -177,7 +177,7 @@ object NetService : IServices {
                     val addresses = gson.fromJson(result, AddressesOSM::class.java) as AddressesOSM
                     if (addresses.isNotEmpty()) {
                         val address: Address = Address().apply {
-                            address = addresses[0].display_name.split(",").dropLast(3).reversed().joinToString(",")
+                            address = addresses[0].display_name//split(",").dropLast(3).reversed().joinToString(",")
                             location = LatLng(addresses[0].lat.toDouble(), addresses[0].lon.toDouble())
                         }
 
